@@ -477,23 +477,32 @@ function bindAuthForms() {
     };
 }
 
-// Spostata fuori da bindAuthForms
+//Gestisce l'invio del form per eliminare l'account
 function bindDeleteForm() {
     document.getElementById('delete-account-form').onsubmit = async (e) => {
         e.preventDefault();
-        const confirmInput = e.target.confirmDelete.value.trim();
+        const confirmInput = document.querySelector('#delete-account-form input[name="confirmDelete"]').value.trim();
+
         if (confirmInput !== "DELETE") {
             alert("Devi digitare 'DELETE' per confermare.");
             return;
         }
+
         const data = new URLSearchParams();
         data.append("action", "deleteAccount");
+        data.append("confirmDelete", confirmInput); // questa è la chiave mancante!
+
         const res = await fetch("ProfileServlet", {
             method: "POST",
             body: data
         });
-        alert(await res.text());
-        window.location.href = "logout.jsp";
+
+        const text = await res.text();
+        alert(text);
+
+        if (text.includes("Account eliminato")) {
+            window.location.href = "logout.jsp";
+        }
     };
 }
 
