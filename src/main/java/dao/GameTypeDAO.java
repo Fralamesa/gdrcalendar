@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameTypeDAO {
-    // Parametri di connessione al database
-    private String jdbcURL = "jdbc:mysql://localhost:3306/gdrcalendar";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "root";
+    // Parametri di connessione al database PostgreSQL su Render
+    private String jdbcURL = "jdbc:postgresql://dpg-d1ea5oili9vc739r5ekg-a.oregon-postgres.render.com/gdrcalendar";
+    private String jdbcUsername = "gdrcalendar_user";
+    private String jdbcPassword = "ihczieayR85gPZDqKDgDYmArgikrAk6q";
 
     /**
      * Ottiene una connessione al database.
-     * Carica dinamicamente il driver MySQL se non già caricato.
+     * Carica dinamicamente il driver PostgreSQL se non già caricato.
      */
     protected Connection getConnection() throws SQLException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); // In caso di errore nel caricamento del driver JDBC
         }
@@ -64,8 +64,12 @@ public class GameTypeDAO {
         }
     }
 
-
-    /**Elimina tipo di gioco solo se NON usato in eventi aperti **/
+    /**
+     * Elimina tipo di gioco solo se NON usato in eventi aperti
+     *
+     * @param nome Nome del tipo di gioco da eliminare
+     * @return true se l'eliminazione è avvenuta con successo
+     */
     public boolean deleteGameType(String nome) throws SQLException {
         String checkSql = "SELECT COUNT(*) FROM eventi WHERE tipo_gioco = ? AND data_fine >= NOW()";
         String deleteSql = "DELETE FROM tipi_gioco WHERE nome = ?";
@@ -80,7 +84,7 @@ public class GameTypeDAO {
                 }
             }
 
-            // 2Se OK, elimina il tipo
+            // Se OK, elimina il tipo
             try (PreparedStatement ps = conn.prepareStatement(deleteSql)) {
                 ps.setString(1, nome);
                 ps.executeUpdate();
@@ -89,3 +93,4 @@ public class GameTypeDAO {
         }
     }
 }
+

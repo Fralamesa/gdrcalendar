@@ -9,17 +9,17 @@ import java.time.YearMonth;
 import java.util.*;
 
 public class EventDAO {
-    // Parametri di connessione al database
-    private String jdbcURL = "jdbc:mysql://localhost:3306/gdrcalendar";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "root";
+	// Parametri di connessione al database PostgreSQL su Render
+    private String jdbcURL = "jdbc:postgresql://dpg-d1ea5oili9vc739r5ekg-a.oregon-postgres.render.com/gdrcalendar";
+    private String jdbcUsername = "gdrcalendar_user";
+    private String jdbcPassword = "ihczieayR85gPZDqKDgDYmArgikrAk6q";
 
-    // Ottiene una connessione al database, caricando il driver JDBC se necessario
+    // Ottiene una connessione al database PostgreSQL
     protected Connection getConnection() throws SQLException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace(); // Stampa lo stack trace in caso il driver non sia trovato
+            e.printStackTrace();
         }
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
     }
@@ -320,7 +320,7 @@ public class EventDAO {
             ps.setString(1, titolo);
             ps.setString(2, descrizione);
             ps.setString(3, tipoGioco);
-            ps.setString(4, masterName); // 👈 usa il nome master, non la mail
+            ps.setString(4, masterName); //usa il nome master, non la mail
             ps.setInt(5, maxGiocatori);
             ps.setTimestamp(6, Timestamp.valueOf(dataInizio));
             ps.setTimestamp(7, Timestamp.valueOf(dataFine));
@@ -343,7 +343,7 @@ public class EventDAO {
             ps.setString(1, titolo);
             ps.setString(2, descrizione);
             ps.setString(3, tipoGioco);
-            ps.setString(4, masterName); // 👈 usa il nome master aggiornato
+            ps.setString(4, masterName); // usa il nome master aggiornato
             ps.setInt(5, maxGiocatori);
             ps.setTimestamp(6, Timestamp.valueOf(dataInizio));
             ps.setTimestamp(7, Timestamp.valueOf(dataFine));

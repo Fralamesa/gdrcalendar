@@ -59,13 +59,15 @@ public class LoginServlet extends HttpServlet {
 
             } else {
                 // Credenziali non valide: mostra messaggio di errore
+                response.setContentType("text/html;charset=UTF-8");
                 response.getWriter().println("Login fallito. Credenziali errate.");
             }
 
         } catch (SQLException e) {
             // Gestione eccezioni SQL come errore interno del server
-            throw new ServletException(e);
+            throw new ServletException("Errore durante l'autenticazione", e);
         }
     }
 }
+
 

@@ -66,7 +66,7 @@ public class RegisterServlet extends HttpServlet {
             // Salvataggio nella tabella temporanea
             userDAO.savePendingUser(nome, cognome, email, hashed, community, token);
 
-            // Invio dell'email di confermaa
+            // Invio dell'email di conferma
             String link = "https://gdrcalendar.onrender.com/ConfirmServlet?token=" + token;
             sendConfirmationEmail(email, link);
 

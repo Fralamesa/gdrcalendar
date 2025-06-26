@@ -91,7 +91,6 @@ public class GameTypeServlet extends HttpServlet {
                     return;
                 }
             }
-
             // Azione non riconosciuta
             else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action non valida");
@@ -100,14 +99,17 @@ public class GameTypeServlet extends HttpServlet {
 
             response.getWriter().write(success ? "OK" : "Errore");
 
-        } catch (SQLIntegrityConstraintViolationException e) {
-            // Caso specifico: il tipo di gioco esiste già (violazione chiave univoca)
-            response.getWriter().write("Questo tipo di gioco esiste già!");
         } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB");
+            // PostgreSQL: 23505 = unique_violation
+            if ("23505".equals(e.getSQLState())) {
+                response.getWriter().write("Questo tipo di gioco esiste già!");
+            } else {
+                e.printStackTrace(); // Debug su console server
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB");
+            }
         }
     }
 }
+
 
 

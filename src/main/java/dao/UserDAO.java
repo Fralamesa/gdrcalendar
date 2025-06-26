@@ -5,10 +5,10 @@ import java.sql.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserDAO {
-    // Parametri di connessione al database
-    private String jdbcURL = "jdbc:mysql://localhost:3306/gdrcalendar";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "root";
+    // Parametri di connessione al database PostgreSQL su Render
+    private String jdbcURL = "jdbc:postgresql://dpg-d1ea5oili9vc739r5ekg-a.oregon-postgres.render.com/gdrcalendar";
+    private String jdbcUsername = "gdrcalendar_user";
+    private String jdbcPassword = "ihczieayR85gPZDqKDgDYmArgikrAk6q";
 
     // Query SQL per inserimento utente, il ruolo è impostato fisso su 'Giocatore'
     // La community è selezionata tramite subquery in base al nome fornito
@@ -24,7 +24,7 @@ public class UserDAO {
      */
     protected Connection getConnection() throws SQLException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); // Stampa errore se il driver non viene trovato
         }
@@ -42,22 +42,18 @@ public class UserDAO {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_USER_SQL)) {
 
-            // Imposta i parametri per la query di inserimento
             statement.setString(1, user.getNome());
             statement.setString(2, user.getCognome());
             statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPasswordHash()); // Password già hashata con BCrypt
-            statement.setString(5, user.getCommunity());    // Nome della community
+            statement.setString(4, user.getPasswordHash());
+            statement.setString(5, user.getCommunity());
 
-            // Esegue l'inserimento e verifica se almeno una riga è stata modificata
             rowInserted = statement.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'eccezione SQL
+            printSQLException(e);
         }
         return rowInserted;
     }
-
 
     /**
      * Verifica se un'email è già presente nel sistema, sia tra gli utenti registrati
@@ -76,10 +72,9 @@ public class UserDAO {
             statement.setString(2, email);
             ResultSet rs = statement.executeQuery();
 
-            return rs.next(); // Ritorna true se è stata trovata almeno una corrispondenza
-
+            return rs.next();
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'errore SQL
+            printSQLException(e);
         }
         return false;
     }
@@ -107,29 +102,27 @@ public class UserDAO {
             statement.setString(4, passwordHash);
             statement.setString(5, community);
             statement.setString(6, token);
-
-            statement.executeUpdate(); // Inserisce il nuovo utente pending
+            statement.executeUpdate();
         } catch (SQLException e) {
             printSQLException(e);
         }
     }
-
+    
     /**
      * Elimina tutti gli utenti in attesa di conferma (`pending_users`) il cui timestamp
      * di creazione è più vecchio di 5 minuti.
      * Utile per mantenere pulita la tabella da registrazioni non confermate.
      */
     public void deleteExpiredPendingUsers() throws SQLException {
-        String sql = "DELETE FROM pending_users WHERE created_at < (NOW() - INTERVAL 5 MINUTE)";
+        String sql = "DELETE FROM pending_users WHERE created_at < NOW() - INTERVAL '5 minutes'";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.executeUpdate(); // Rimuove tutti i record scaduti
+            statement.executeUpdate();
         } catch (SQLException e) {
             printSQLException(e);
         }
     }
-
+    
 
     /**
      * Conferma l'utente utilizzando il token ricevuto via email.
@@ -149,9 +142,6 @@ public class UserDAO {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                // L'utente esiste in pending_users, procedi con la migrazione
-
-                // Inserisce l'utente confermato nella tabella `users`
                 String insert = "INSERT INTO users (nome, cognome, email, password_hash, ruolo, community_id) " +
                                 "VALUES (?, ?, ?, ?, 'Giocatore', ?)";
                 try (PreparedStatement insertStmt = connection.prepareStatement(insert)) {
@@ -163,7 +153,6 @@ public class UserDAO {
                     insertStmt.executeUpdate();
                 }
 
-                // Rimuove l'utente dalla tabella `pending_users` ora che è stato confermato
                 String delete = "DELETE FROM pending_users WHERE token = ?";
                 try (PreparedStatement deleteStmt = connection.prepareStatement(delete)) {
                     deleteStmt.setString(1, token);
@@ -174,12 +163,11 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'errore SQL
+            printSQLException(e);
         }
 
-        return false; // Nessun utente trovato con quel token
+        return false;
     }
-
 
     /**
      * Verifica le credenziali di accesso di un utente.
@@ -200,17 +188,15 @@ public class UserDAO {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                // Recupera l'hash memorizzato nel database
                 String storedHash = rs.getString("password_hash");
-                // Verifica che la password inserita corrisponda all'hash usando BCrypt
                 return BCrypt.checkpw(password, storedHash);
             }
 
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'errore SQL
+            printSQLException(e);
         }
 
-        return false; // Email non trovata o errore durante il controllo
+        return false;
     }
 
     /**
@@ -230,17 +216,16 @@ public class UserDAO {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                return rs.getString("ruolo"); // Restituisce il ruolo associato all'utente
+                return rs.getString("ruolo");
             }
 
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'errore SQL
+            printSQLException(e);
         }
 
-        return null; // Nessun utente trovato con l'email fornita
+        return null;
     }
-
-
+    
     /**
      * Salva un token di reset della password per l'utente identificato dall'email.
      * Questo token sarà utilizzato per verificare la richiesta di reset.
@@ -256,10 +241,9 @@ public class UserDAO {
 
             statement.setString(1, token);
             statement.setString(2, email);
-            statement.executeUpdate(); // Aggiorna il campo reset_token per l'utente specificato
-
+            statement.executeUpdate();
         } catch (SQLException e) {
-            printSQLException(e); // Gestione dell'errore SQL
+            printSQLException(e);
         }
     }
 
@@ -279,15 +263,13 @@ public class UserDAO {
 
             statement.setString(1, newHashed);
             statement.setString(2, token);
-
-            // Restituisce true se almeno una riga è stata modificata (token valido)
             return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             printSQLException(e);
         }
 
-        return false; // Token non trovato o errore
+        return false;
     }
 
     /**
@@ -299,7 +281,7 @@ public class UserDAO {
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
-                e.printStackTrace(System.err); // Stampa l'intera traccia dello stack
+                e.printStackTrace(System.err);
             }
         }
     }
@@ -318,10 +300,9 @@ public class UserDAO {
 
             stmt.setString(1, newEmail);
             stmt.setString(2, oldEmail);
-            stmt.executeUpdate(); // Esegue aggiornamento se oldEmail esiste
+            stmt.executeUpdate();
         }
     }
-
     /**
      * Aggiorna la password di un utente, sostituendola con una nuova (hashata).
      * Utilizza BCrypt per la cifratura della password in chiaro prima del salvataggio.
@@ -335,10 +316,9 @@ public class UserDAO {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Hash della nuova password con BCrypt prima dell'aggiornamento
             stmt.setString(1, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
             stmt.setString(2, email);
-            stmt.executeUpdate(); // Esegue aggiornamento password
+            stmt.executeUpdate();
         }
     }
 
@@ -357,8 +337,7 @@ public class UserDAO {
 
             stmt.setString(1, newRole);
             stmt.setString(2, email);
-            stmt.executeUpdate(); // Aggiorna il ruolo associato all'utente
+            stmt.executeUpdate();
         }
     }
 }
-

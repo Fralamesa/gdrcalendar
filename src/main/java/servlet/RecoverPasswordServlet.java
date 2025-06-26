@@ -46,7 +46,7 @@ public class RecoverPasswordServlet extends HttpServlet {
             String resetToken = UUID.randomUUID().toString();
             userDAO.saveResetToken(email, resetToken);
 
-            // Crea link per il reset della password e invia via emaill
+            // Crea link per il reset della password e invia via email
             String link = "https://gdrcalendar.onrender.com/ResetPasswordServlet?token=" + resetToken;
             sendResetEmail(email, link);
 
