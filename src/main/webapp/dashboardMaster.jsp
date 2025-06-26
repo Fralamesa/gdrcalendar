@@ -41,18 +41,22 @@
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
-
-        /* Header: layout con titolo e azioni utente */
-        header {
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+        
+		/* Header fisso in alto con layout flessibile */
+      header {
+    		padding: 20px 40px;
+    		display: flex;
+    		justify-content: space-between;
+    		align-items: center;
+    		position: sticky;
+   			 top: 0;
+    		z-index: 1000;
+    		border-bottom: 1px solid rgba(255,255,255,0.1);
+    		background: rgba(30, 30, 30, 0.4); /* più contrasto su sfondo bianco */
+   			backdrop-filter: blur(12px);
+    		color: #fff; /* garantisce visibilità del testo */
+    	}
+    		
 
         /* Titolo nella barra superiore */
         header h1 {
@@ -86,13 +90,14 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Contenitore principale della pagina */
+      /* Area principale della pagina */
         .main-content {
-            flex: 1;
-            padding: 30px;
-            background: white;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-        }
+   			flex: 1;
+   			padding: 30px;
+   			background: white;
+   			box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  			margin-top: 100px; /* evita che il contenuto finisca sotto l'header */
+		}	
 
         /* Card utilizzate per contenere sezioni (es. calendario) */
         .card {
