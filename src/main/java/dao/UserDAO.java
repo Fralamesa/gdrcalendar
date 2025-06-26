@@ -340,4 +340,40 @@ public class UserDAO {
             stmt.executeUpdate();
         }
     }
+    
+    /**
+     * Elimina tutte le prenotazioni associate a un determinato indirizzo email.
+     * Utile quando un utente decide di cancellare il proprio account, per evitare
+     * dati orfani nella tabella `prenotazioni`.
+     *
+     * @param email Indirizzo email dell'utente di cui eliminare le prenotazioni
+     * @throws SQLException In caso di errore durante l'esecuzione della query
+     */
+    public void deletePrenotazioniByEmail(String email) throws SQLException {
+        String sql = "DELETE FROM prenotazioni WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
+     * Elimina definitivamente un utente dalla tabella `users` in base all'email.
+     * Questo metodo viene tipicamente usato dopo aver eliminato eventuali dati collegati,
+     * come le prenotazioni.
+     *
+     * @param email Indirizzo email dell'utente da eliminare
+     * @throws SQLException In caso di errore durante l'eliminazione
+     */
+    public void deleteUserByEmail(String email) throws SQLException {
+        String sql = "DELETE FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.executeUpdate();
+        }
+    }
+
+    
 }

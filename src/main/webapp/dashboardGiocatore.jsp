@@ -293,7 +293,7 @@
         <h3>Impostazioni</h3>
         <div class="footer-buttons">
             <!-- Pulsante per aprire la modale di aggiornamento email/password -->
-            <button id="btn-update-auth">Aggiorna Email / Password</button>
+            <button id="btn-update-auth">Gestione Profilo</button>
         </div>
     </div>
 </footer>
@@ -323,11 +323,10 @@
         document.getElementById("modal").style.display = "none";
     }
 
-    // Gestione del click sul pulsante "Aggiorna Email / Password"
+ // Mostra la modale per aggiornare email e password e cancellare profilo
     document.getElementById("btn-update-auth").onclick = () => {
-        // Apre la modale con due form: uno per aggiornare l'email e uno per aggiornare la password
         openModal(`
-            <h3>Aggiorna Email / Password</h3>
+            <h3>Gestione Profilo</h3>
             <form id="update-email-form">
                 <input type="email" name="newEmail" placeholder="Nuova Email" required>
                 <button type="submit">Aggiorna Email</button>
@@ -337,8 +336,14 @@
                 <input type="password" name="confirmPassword" placeholder="Conferma Password" required>
                 <button type="submit">Aggiorna Password</button>
             </form>
+            <form id="delete-account-form">
+                <input type="text" name="confirmDelete" placeholder='Scrivi "DELETE" per confermare' required>
+                <button type="submit" style="background-color: #e74c3c;">Elimina Account</button>
+            </form>
         `);
-        bindAuthForms(); // Collega la logica ai form appena inseriti nella modale
+        // Associa i comportamenti ai form
+        bindAuthForms();
+        bindDeleteForm();
     };
 
     // Collega le funzioni di invio ai form della modale di autenticazione
@@ -352,6 +357,26 @@
             alert(await res.text()); // Mostra la risposta del server
             closeModal();
         };
+        
+     // Gestisce l'invio del form per eliminare l'account
+        function bindDeleteForm() {
+            document.getElementById('delete-account-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const confirmInput = e.target.confirmDelete.value.trim();
+                if (confirmInput !== "DELETE") {
+                    alert("Devi digitare 'DELETE' per confermare.");
+                    return;
+                }
+                const data = new URLSearchParams();
+                data.append("action", "deleteAccount");
+                const res = await fetch("ProfileServlet", {
+                    method: "POST",
+                    body: data
+                });
+                alert(await res.text());
+                window.location.href = "logout.jsp";
+            };
+        
 
         // Gestione dell'invio del form di aggiornamento password
         document.getElementById('update-password-form').onsubmit = async (e) => {

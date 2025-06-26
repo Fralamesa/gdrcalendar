@@ -82,6 +82,21 @@ public class ProfileServlet extends HttpServlet {
           userDAO.updateUserRole(targetEmail, newRole);
           response.getWriter().write("Ruolo aggiornato!");
           break;
+          
+       // Elimina utente e prenotazioni associate
+        case "deleteAccount":
+          String confirmDelete = request.getParameter("confirmDelete");
+          if (!"DELETE".equalsIgnoreCase(confirmDelete)) {
+            response.getWriter().write("Conferma non valida. Scrivi DELETE per confermare.");
+            return;
+          }
+          // Elimina prima tutte le prenotazioni associate
+          userDAO.deletePrenotazioniByEmail(currentEmail);
+          // Elimina l'account utente
+          userDAO.deleteUserByEmail(currentEmail);
+          session.invalidate();
+          response.getWriter().write("Account eliminato con successo.");
+          break;
       }
 
     } catch (Exception e) {
