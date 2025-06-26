@@ -67,7 +67,7 @@ public class RegisterServlet extends HttpServlet {
             userDAO.savePendingUser(nome, cognome, email, hashed, community, token);
 
             // Invio dell'email di conferma
-            String link = "http://localhost:8080/GDRCalendar/ConfirmServlet?token=" + token;
+            String link = "https://gdrcalendar.onrender.com/ConfirmServlet?token=" + token;
             sendConfirmationEmail(email, link);
 
             response.getWriter().println("Registrazione ricevuta! Controlla la tua email.");
