@@ -357,26 +357,6 @@
             alert(await res.text()); // Mostra la risposta del server
             closeModal();
         };
-        
-     // Gestisce l'invio del form per eliminare l'account
-        function bindDeleteForm() {
-            document.getElementById('delete-account-form').onsubmit = async (e) => {
-                e.preventDefault();
-                const confirmInput = e.target.confirmDelete.value.trim();
-                if (confirmInput !== "DELETE") {
-                    alert("Devi digitare 'DELETE' per confermare.");
-                    return;
-                }
-                const data = new URLSearchParams();
-                data.append("action", "deleteAccount");
-                const res = await fetch("ProfileServlet", {
-                    method: "POST",
-                    body: data
-                });
-                alert(await res.text());
-                window.location.href = "logout.jsp";
-            };
-        
 
         // Gestione dell'invio del form di aggiornamento password
         document.getElementById('update-password-form').onsubmit = async (e) => {
@@ -386,6 +366,26 @@
             const res = await fetch("ProfileServlet", { method: "POST", body: data });
             alert(await res.text()); // Mostra la risposta del server
             closeModal();
+        };
+    }
+
+    // Gestisce l'invio del form per eliminare l'account
+    function bindDeleteForm() {
+        document.getElementById('delete-account-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const confirmInput = e.target.confirmDelete.value.trim();
+            if (confirmInput !== "DELETE") {
+                alert("Devi digitare 'DELETE' per confermare.");
+                return;
+            }
+            const data = new URLSearchParams();
+            data.append("action", "deleteAccount");
+            const res = await fetch("ProfileServlet", {
+                method: "POST",
+                body: data
+            });
+            alert(await res.text());
+            window.location.href = "logout.jsp";
         };
     }
 </script>

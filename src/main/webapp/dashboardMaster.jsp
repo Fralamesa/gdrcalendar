@@ -455,7 +455,6 @@ function bindEventForm() {
     };
 }
 
-// Gestisce l'invio dei form di aggiornamento email e password
 function bindAuthForms() {
     // Form per aggiornare l'email
     document.getElementById('update-email-form').onsubmit = async (e) => {
@@ -467,25 +466,6 @@ function bindAuthForms() {
         closeModal();
     };
 
- // Gestisce l'invio del form per eliminare l'account
-    function bindDeleteForm() {
-        document.getElementById('delete-account-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const confirmInput = e.target.confirmDelete.value.trim();
-            if (confirmInput !== "DELETE") {
-                alert("Devi digitare 'DELETE' per confermare.");
-                return;
-            }
-            const data = new URLSearchParams();
-            data.append("action", "deleteAccount");
-            const res = await fetch("ProfileServlet", {
-                method: "POST",
-                body: data
-            });
-            alert(await res.text());
-            window.location.href = "logout.jsp";
-        };
-    
     // Form per aggiornare la password
     document.getElementById('update-password-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -496,6 +476,27 @@ function bindAuthForms() {
         closeModal();
     };
 }
+
+// Spostata fuori da bindAuthForms
+function bindDeleteForm() {
+    document.getElementById('delete-account-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const confirmInput = e.target.confirmDelete.value.trim();
+        if (confirmInput !== "DELETE") {
+            alert("Devi digitare 'DELETE' per confermare.");
+            return;
+        }
+        const data = new URLSearchParams();
+        data.append("action", "deleteAccount");
+        const res = await fetch("ProfileServlet", {
+            method: "POST",
+            body: data
+        });
+        alert(await res.text());
+        window.location.href = "logout.jsp";
+    };
+}
+
 
 // Carica dinamicamente i tipi di gioco disponibili nel <select> indicato
 async function loadGameTypes(selectId) {
