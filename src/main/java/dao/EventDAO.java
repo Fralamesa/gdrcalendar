@@ -194,7 +194,7 @@ public class EventDAO {
         String checkSql = "SELECT 1 FROM prenotazioni p " +
                           "JOIN eventi e ON p.evento_id = e.id " +
                           "WHERE p.email = ? AND e.tipo_gioco = ? AND e.id != ? " +
-                          "AND e.data_fine >= NOW()";
+                          "AND e.data_fine > NOW()";
 
         // Verifica se l'utente ha già prenotato questo evento
         String alreadyBookedSql = "SELECT 1 FROM prenotazioni WHERE evento_id = ? AND email = ?";
@@ -308,15 +308,6 @@ public class EventDAO {
         return tipiPrenotati;
     }
 
-    /** Cancella tutte le prenotazioni associate a un evento **/
-    public void deleteBookingsByEventId(int eventId) throws SQLException {
-        String sql = "DELETE FROM prenotazioni WHERE evento_id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, eventId);
-            ps.executeUpdate();
-        }
-    }
     
     /** Crea evento con descrizione*/
     public boolean createEvent(String titolo, String descrizione, String tipoGioco, String masterName,
@@ -363,4 +354,7 @@ public class EventDAO {
             return rows > 0;
         }
     }
+    
+    
+    
 }
