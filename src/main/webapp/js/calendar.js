@@ -146,27 +146,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 td.classList.add('has-event');
 
 				data[isoDate].forEach(ev => {
-				  const div = document.createElement('div');
-
-				  // Controlla se le date sono su due giorni distinti
-				  const inizio = new Date(ev.dataInizio);
-				  const fine = new Date(ev.dataFine);
-				  const durataGiorni = inizio.toDateString() !== fine.toDateString();
-
-				  // Costruzione testo evento: tipo gioco + titolo + luogo + durata (per eventi con durata maggiore di 1)
-				  let testo = `${ev.tipoGioco} - ${ev.titolo} - ${ev.luogo}`;
-				  if (durataGiorni) {
-				    const start = inizio.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
-				    const end = fine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
-				    testo += `\nDal ${start} al ${end}`;
-				  }
-
-				  div.textContent = testo;
-				  div.style.whiteSpace = "pre-line"; // per supportare l'andata a capo
-				  div.style.cursor = 'pointer';
-				  div.style.padding = '2px';
-				  div.style.borderRadius = '4px';
-				  div.style.marginTop = '4px';
+					const div = document.createElement('div');
+					div.textContent = `${ev.tipoGioco} - ${ev.titolo} - ${ev.luogo}`;
+					div.style.cursor = 'pointer';
+					div.style.padding = '2px';
+					div.style.borderRadius = '4px';
+					div.style.marginTop = '4px';
 
                   // Applica uno stile in base allo stato dell'evento
                   if (ev.isExpired) {
