@@ -148,17 +148,17 @@ document.addEventListener('DOMContentLoaded', function () {
 				data[isoDate].forEach(ev => {
 				  const div = document.createElement('div');
 
-				  // Calcola durata evento in giorni
+				  // Controlla se le date sono su due giorni distinti
 				  const inizio = new Date(ev.dataInizio);
 				  const fine = new Date(ev.dataFine);
-				  const durataGiorni = Math.ceil((fine - inizio) / (1000 * 60 * 60 * 24));
+				  const durataGiorni = inizio.toDateString() !== fine.toDateString();
 
 				  // Costruzione testo evento: tipo gioco + titolo + luogo + durata (per eventi con durata maggiore di 1)
 				  let testo = `${ev.tipoGioco} - ${ev.titolo} - ${ev.luogo}`;
-				  if (durataGiorni >= 1) { 
-				    const startDate = inizio.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
-				    const endDate = fine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
-				    testo += `\nDal ${startDate} al ${endDate}`;
+				  if (durataGiorni) {
+				    const start = inizio.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+				    const end = fine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+				    testo += `\nDal ${start} al ${end}`;
 				  }
 
 				  div.textContent = testo;
