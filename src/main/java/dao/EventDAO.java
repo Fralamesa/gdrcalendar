@@ -308,6 +308,15 @@ public class EventDAO {
         return tipiPrenotati;
     }
 
+    /** Cancella tutte le prenotazioni associate a un evento **/
+    public void deleteBookingsByEventId(int eventId) throws SQLException {
+        String sql = "DELETE FROM prenotazioni WHERE evento_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, eventId);
+            ps.executeUpdate();
+        }
+    }
     
     /** Crea evento con descrizione*/
     public boolean createEvent(String titolo, String descrizione, String tipoGioco, String masterName,

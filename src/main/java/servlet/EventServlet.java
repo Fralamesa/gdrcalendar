@@ -208,7 +208,8 @@ public class EventServlet extends HttpServlet {
                         : "Errore durante la creazione.");
 
             }
-            // === Aggiornamento evento ===
+            
+         // === Aggiornamento evento ===
             else if ("update".equalsIgnoreCase(action)) {
                 if (!"Master".equals(userRuolo)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permesso negato");
@@ -233,16 +234,35 @@ public class EventServlet extends HttpServlet {
                     return;
                 }
 
+                // Recupera lo stato precedente prima dell'aggiornamento
+                String userEmail = (String) request.getSession().getAttribute("userEmail");
+                Evento eventoCorrente = eventDAO.getEventDetails(id, userEmail, userRuolo);
+                String statoPrecedente = eventoCorrente.getStatus();
+
+                // Esegui aggiornamento
                 boolean ok = eventDAO.updateEvent(
                         id, titolo, descrizione, tipoGioco, masterName, maxGiocatori,
                         dataInizio, dataFine, luogo, note
                 );
 
+                if (ok) {
+                    // Ricarica l'evento per verificare il nuovo stato
+                    Evento eventoAggiornato = eventDAO.getEventDetails(id, userEmail, userRuolo);
+                    String nuovoStato = eventoAggiornato.getStatus();
+
+                    // Se è passato da "aperto"/"chiuso" a "terminato", cancella le prenotazioni
+                    if (!"terminato".equalsIgnoreCase(statoPrecedente) &&
+                        "terminato".equalsIgnoreCase(nuovoStato)) {
+                        eventDAO.deleteBookingsByEventId(id);
+                    }
+                }
+
                 response.getWriter().write(ok
                         ? "Evento aggiornato!"
                         : "Errore durante l'aggiornamento.");
-
             }
+
+            
             // === Prenotazione evento ===
             else if ("book".equalsIgnoreCase(action)) {
                 String userEmail = (String) request.getSession().getAttribute("userEmail");
