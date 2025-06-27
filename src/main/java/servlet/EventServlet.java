@@ -106,20 +106,20 @@ public class EventServlet extends HttpServlet {
             boolean isFull = evento.getNumPrenotati() >= evento.getMaxGiocatori();
             boolean isExpired = evento.getDataFine().isBefore(LocalDateTime.now());
 
-            // Verifica se l'utente ha già prenotato altri eventi dello stesso tipo nel mese
-            Set<String> tipiPrenotati = eventDAO.getGameTypesBookedByUserInMonth(
-                    userEmail, YearMonth.from(evento.getDataInizio()));
+            // Verifica se l'utente ha già prenotato altri eventi dello stesso tipo non ancora terminati
+            Set<String> tipiPrenotati = eventDAO.getActiveGameTypesBooked(userEmail);
 
+            // Considera stesso tipo se l'utente non ha una prenotazione attiva ad un altro evento con lo stesso tipo di gioco
             boolean isSameTypeBooked = tipiPrenotati.contains(evento.getTipoGioco());
 
-            // L'utente può prenotare se:
-            // - evento aperto
-            // - non pieno
-            // - non scaduto
-            // - non è già prenotato a un evento dello stesso tipo (a meno che stia modificando se stesso)
-            boolean isBookable = !isFull && !isExpired &&
-                    evento.getStatus().equalsIgnoreCase("aperto") &&
-                    (!isSameTypeBooked || isBooked);
+            // L'evento è prenotabile se:
+            // - non è già stato prenotato dall'utente
+            // - non è chiuso
+            // - non è terminato
+            // - L'utente non ha una prenotazione attiva ad un altro evento con lo stesso tipo di gioco
+            boolean isBookable = !isFull && !isExpired && !isSameTypeBooked && !isBooked;
+                    
+                    
 
             // Costruzione risposta JSON con tutti i dati richiesti
             Map<String, Object> eventMap = new HashMap<>();

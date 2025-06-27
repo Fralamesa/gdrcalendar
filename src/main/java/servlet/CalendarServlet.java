@@ -71,7 +71,7 @@ public class CalendarServlet extends HttpServlet {
             Map<String, List<Evento>> rawEvents = eventDAO.getEventsForMonth(ym);
 
             // Recupera i tipi di gioco già prenotati dall'utente nel mese
-            Set<String> tipiPrenotati = eventDAO.getGameTypesBookedByUserInMonth(userEmail, ym);
+            Set<String> tipiPrenotati = eventDAO.getActiveGameTypesBooked(userEmail);
 
             // Mappa di risposta: data (yyyy-MM-dd) -> lista eventi con flag prenotabilità
             Map<String, List<Map<String, Object>>> responseMap = new HashMap<>();
@@ -91,11 +91,10 @@ public class CalendarServlet extends HttpServlet {
                     boolean isExpired = ev.getDataFine().isBefore(LocalDateTime.now());
                     boolean isSameTypeBooked = tipiPrenotati.contains(ev.getTipoGioco());
 
-                    // Logica di prenotabilità visiva lato client
                     boolean isBookable = ev.getStatus().equalsIgnoreCase("aperto")
                             && !isFull
                             && !isBooked
-                            && (!tipiPrenotati.isEmpty() ? isSameTypeBooked : true)
+                            && !isSameTypeBooked
                             && !isExpired;
 
                     // Costruzione mappa evento da serializzare

@@ -387,7 +387,7 @@ function bindDeleteForm() {
 
         const data = new URLSearchParams();
         data.append("action", "deleteAccount");
-        data.append("confirmDelete", confirmInput); // questa è la chiave mancante!
+        data.append("confirmDelete", confirmInput);
 
         const res = await fetch("ProfileServlet", {
             method: "POST",

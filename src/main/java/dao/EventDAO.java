@@ -278,35 +278,33 @@ public class EventDAO {
         }
     }
 
-    /** Recupera i tipi di gioco prenotati da un utente in un mese specifico **/
-    public Set<String> getGameTypesBookedByUserInMonth(String email, YearMonth month) throws SQLException {
+    /** Recupera i tipi di gioco prenotati da un utente in eventi non ancora terminati **/
+    public Set<String> getActiveGameTypesBooked(String email) throws SQLException {
         Set<String> tipiPrenotati = new HashSet<>();
 
         String sql = "SELECT DISTINCT e.tipo_gioco " +
                      "FROM prenotazioni p " +
                      "JOIN eventi e ON p.evento_id = e.id " +
                      "WHERE p.email = ? " +
-                     "AND e.data_inizio BETWEEN ? AND ?";
+                     "AND e.data_fine > ?"; // Solo eventi futuri o in corso
 
-        // Calcolo dell'intervallo temporale del mese
-        LocalDateTime start = month.atDay(1).atStartOfDay();
-        LocalDateTime end = month.atEndOfMonth().atTime(23, 59, 59);
+        LocalDateTime now = LocalDateTime.now();
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, email);
-            ps.setTimestamp(2, Timestamp.valueOf(start));
-            ps.setTimestamp(3, Timestamp.valueOf(end));
+            ps.setTimestamp(2, Timestamp.valueOf(now));
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                tipiPrenotati.add(rs.getString("tipo_gioco")); // Aggiunge solo tipi unici
+                tipiPrenotati.add(rs.getString("tipo_gioco"));
             }
         }
 
         return tipiPrenotati;
     }
+
 
     
     /** Crea evento con descrizione*/

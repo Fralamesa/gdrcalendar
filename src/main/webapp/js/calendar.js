@@ -154,13 +154,13 @@ document.addEventListener('DOMContentLoaded', function () {
                   div.style.marginTop = '4px';
 
                   // Applica uno stile in base allo stato dell'evento
-                  if (ev.status === "terminato") {
+                  if (ev.isExpired) {
                     div.style.backgroundColor = "#ffcccc";
                     div.style.opacity = "0.6";
                   } else if (ev.isBooked) {
                     div.style.backgroundColor = "#228B22";
                     div.style.color = "white";
-                  } else if (ev.status === "aperto" && !ev.isBooked && !ev.isFull && !ev.isSameTypeBooked) {
+                  } else if (ev.isBookable) {
                     div.style.backgroundColor = "#90ee90";
                   } else {
                     div.style.backgroundColor = "#e74c3c";
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
           buttonsContainer.appendChild(cancelBtn);
         } 
         // Altrimenti, se prenotabile, mostra il pulsante per prenotarsi
-        else if (!ev.isBooked && ev.status === "aperto" && !ev.isFull && !ev.isSameTypeBooked) {
+        else if (ev.isBookable) {
           const bookBtn = document.createElement('button');
           bookBtn.textContent = 'Prenota';
           bookBtn.className = 'modal-button';
