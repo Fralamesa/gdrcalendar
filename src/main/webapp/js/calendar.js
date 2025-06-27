@@ -145,13 +145,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Se ci sono eventi in questa data, aggiungili alla cella
                 td.classList.add('has-event');
 
-                data[isoDate].forEach(ev => {
-                  const div = document.createElement('div');
-                  div.textContent = `${ev.tipoGioco} - ${ev.titolo} - ${ev.luogo}`;
-                  div.style.cursor = 'pointer';
-                  div.style.padding = '2px';
-                  div.style.borderRadius = '4px';
-                  div.style.marginTop = '4px';
+				data[isoDate].forEach(ev => {
+				  const div = document.createElement('div');
+
+				  // Calcola durata evento in giorni
+				  const inizio = new Date(ev.dataInizio);
+				  const fine = new Date(ev.dataFine);
+				  const durataGiorni = Math.ceil((fine - inizio) / (1000 * 60 * 60 * 24));
+
+				  // Costruzione testo evento: tipo gioco + titolo + luogo + durata (per eventi con durata maggiore di 1)
+				  let testo = `${ev.tipoGioco} - ${ev.titolo} - ${ev.luogo}`;
+				  if (durataGiorni >= 1) { 
+				    const startDate = inizio.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+				    const endDate = fine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+				    testo += `\nDal ${startDate} al ${endDate}`;
+				  }
+
+				  div.textContent = testo;
+				  div.style.whiteSpace = "pre-line"; // per supportare l'andata a capo
+				  div.style.cursor = 'pointer';
+				  div.style.padding = '2px';
+				  div.style.borderRadius = '4px';
+				  div.style.marginTop = '4px';
 
                   // Applica uno stile in base allo stato dell'evento
                   if (ev.isExpired) {
