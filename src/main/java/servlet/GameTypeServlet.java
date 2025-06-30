@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 /**
@@ -17,14 +16,14 @@ import java.util.List;
  * - elencare i tipi disponibili (GET)
  * - aggiungere o eliminare un tipo di gioco (POST)
  */
+
 @WebServlet("/GameTypeServlet")
 public class GameTypeServlet extends HttpServlet {
     private GameTypeDAO gameTypeDAO;
     private Gson gson;
 
-    /**
-     * Inizializza DAO e oggetto Gson.
-     */
+    // Inizializza GameTypeDAO e il parser JSON (Gson)
+    
     @Override
     public void init() {
         gameTypeDAO = new GameTypeDAO();
@@ -32,9 +31,9 @@ public class GameTypeServlet extends HttpServlet {
     }
 
     /**
-     * Gestisce richieste GET.
-     * Attualmente supporta solo `action=list` per ottenere tutti i tipi di gioco.
+     * Gestisce richieste GET per ottenere tutti i tipi di gioco.
      */
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -57,8 +56,8 @@ public class GameTypeServlet extends HttpServlet {
 
     /**
      * Gestisce richieste POST per aggiunta o eliminazione di tipi di gioco.
-     * Richiede parametro `nome` (non vuoto) e `action` (add/delete).
      */
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -83,7 +82,7 @@ public class GameTypeServlet extends HttpServlet {
             else if ("delete".equalsIgnoreCase(action)) {
                 success = gameTypeDAO.deleteGameType(nome);
 
-                // Fallimento causato da vincolo relazionale: tipo in uso
+                // Fallimento 
                 if (!success) {
                     response.getWriter().write(
                         "Impossibile eliminare: ci sono eventi ancora attivi con questo tipo di gioco!"
@@ -91,6 +90,7 @@ public class GameTypeServlet extends HttpServlet {
                     return;
                 }
             }
+            
             // Azione non riconosciuta
             else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action non valida");
@@ -104,7 +104,7 @@ public class GameTypeServlet extends HttpServlet {
             if ("23505".equals(e.getSQLState())) {
                 response.getWriter().write("Questo tipo di gioco esiste già!");
             } else {
-                e.printStackTrace(); // Debug su console server
+                e.printStackTrace(); // Per debug server
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB");
             }
         }

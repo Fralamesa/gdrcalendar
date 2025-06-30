@@ -15,6 +15,7 @@ import javax.mail.internet.*;
  * Servlet per gestire la richiesta di recupero password.
  * Invia un'email contenente un link con token per il reset.
  */
+
 @WebServlet("/RecoverPasswordServlet")
 public class RecoverPasswordServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -29,6 +30,7 @@ public class RecoverPasswordServlet extends HttpServlet {
      * Gestisce la richiesta POST per l'invio dell'email di reset password.
      * Se l'email esiste, genera un token di recupero e invia un link via email.
      */
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -42,15 +44,14 @@ public class RecoverPasswordServlet extends HttpServlet {
                 return;
             }
 
-            // Genera token univoco e lo salva sul database associato all'utente
+            // Genera token univoco e associa all'utente
             String resetToken = UUID.randomUUID().toString();
             userDAO.saveResetToken(email, resetToken);
 
-            // Crea link per il reset della password e invia via email
+            // Crea link per il reset della password e invia email
             String link = "https://gdrcalendar.onrender.com/ResetPasswordServlet?token=" + resetToken;
             sendResetEmail(email, link);
 
-            // Risposta generica per non rivelare informazioni sensibili
             response.getWriter().println("Se l'email è corretta, riceverai un link per reimpostare la password. Ignora se non l'hai richiesto.");
 
         } catch (SQLException e) {
@@ -62,10 +63,11 @@ public class RecoverPasswordServlet extends HttpServlet {
      * Invia un'email con il link per il reset della password.
      * Configura i parametri SMTP e utilizza un account Gmail per l'invio.
      */
+    
     private void sendResetEmail(String to, String link) {
         final String from = "arxdraconisgdr@gmail.com";
-        final String password = "vlsuymcdihewfwuv"; // Attenzione: andrebbe protetta in configurazione esterna
-
+        final String password = "vlsuymcdihewfwuv";
+        
         // Configurazione SMTP per Gmail
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -83,7 +85,7 @@ public class RecoverPasswordServlet extends HttpServlet {
         });
 
         try {
-            // Costruzione del messaggio email
+            // Costruzione del messaggio
             Message message = new MimeMessage(mailSession);
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
@@ -95,7 +97,7 @@ public class RecoverPasswordServlet extends HttpServlet {
             Transport.send(message);
 
         } catch (MessagingException e) {
-            e.printStackTrace(); // In contesti reali andrebbe loggato in modo sicuro
+            e.printStackTrace(); // Per debug server
         }
     }
 }

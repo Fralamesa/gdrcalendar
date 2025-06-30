@@ -9,45 +9,46 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * Servlet per la conferma dell'email dell'utente tramite token.
- * L'utente viene spostato da `pending_users` a `users` se il token è valido.
+ * Gestisce la conferma della registrazione utente via token.
+ * Se il token è valido, l'utente viene spostato da `pending_users` a `users`
+ * e riceve un messaggio di conferma con redirect alla login.
  */
+
 @WebServlet("/ConfirmServlet")
 public class ConfirmServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private UserDAO userDAO;
 
-    /**
-     * Inizializza il DAO degli utenti al momento dell'avvio della servlet.
-     */
+    
+    // Inizializza il DAO degli utenti al momento dell'avvio della servlet.
+     
     public void init() {
         userDAO = new UserDAO();
     }
 
     /**
-     * Gestisce la conferma dell'account utente.
-     * Riceve un token tramite parametro GET e, se valido, attiva l'account.
-     *
-     * @param request  richiesta HTTP contenente il parametro "token"
-     * @param response risposta HTTP con messaggio HTML di conferma o errore
+     * Gestisce la richiesta GET per confermare la registrazione di un utente.
+     * L’utente clicca un link ricevuto via email contenente un token:
+     * se il token è valido, l’account viene attivato e l’utente viene reindirizzato al login.
      */
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String token = request.getParameter("token");
 
-        // Verifica presenza del token
+        // Controlla che il token sia presente nella richiesta
         if (token == null || token.trim().isEmpty()) {
             response.getWriter().println("Token mancante.");
             return;
         }
 
         try {
-            // Tenta la conferma dell'utente tramite il token
+        	// Prova a confermare l’account usando il token ricevuto
             boolean confirmed = userDAO.confirmUser(token);
 
             if (confirmed) {
-                // Token valido: mostra messaggio di conferma e redirect automatico alla login
+            	 // Token valido: mostra messaggio di successo e reindirizza alla pagina di login
                 response.setContentType("text/html;charset=UTF-8");
                 response.getWriter().println("<html><head>");
                 response.getWriter().println("<meta http-equiv='refresh' content='3;url=login.jsp'/>");
@@ -57,11 +58,11 @@ public class ConfirmServlet extends HttpServlet {
                 response.getWriter().println("<p>Verrai reindirizzato alla pagina di login tra pochi secondi...</p>");
                 response.getWriter().println("</body></html>");
             } else {
-                // Token non valido o già utilizzato
+                // Token non valido
                 response.getWriter().println("Token non valido, già usato o scaduto.");
             }
         } catch (SQLException e) {
-            // Solleva eccezione in caso di errore di accesso al database
+            // In caso di errore di accesso al db
             throw new ServletException(e);
         }
     }

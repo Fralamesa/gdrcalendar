@@ -13,9 +13,12 @@ import javax.mail.internet.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
- * Servlet per gestire la registrazione degli utenti.
- * Salva l'utente in pending_users e invia un'email di conferma.
+ * Gestisce la registrazione dei nuovi utenti.
+ * I dati vengono salvati in attesa di conferma (pending_users)
+ * e viene inviata un'email con link di attivazione.
  */
+
+
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -32,6 +35,7 @@ public class RegisterServlet extends HttpServlet {
      * - Crea un record temporaneo in pending_users.
      * - Invia una mail di conferma con token.
      */
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword");
         String community = request.getParameter("community");
 
-        // Verifica corrispondenza password
+        // Controlla che la password inserita sia uguale alla conferma
         if (!password.equals(confirmPassword)) {
             response.getWriter().println("Errore: le password non coincidono.");
             return;
@@ -66,7 +70,7 @@ public class RegisterServlet extends HttpServlet {
             // Salvataggio nella tabella temporanea
             userDAO.savePendingUser(nome, cognome, email, hashed, community, token);
 
-            // Invio dell'email di conferma
+            // Genera e invia all’utente il link per attivare l’account via email
             String link = "https://gdrcalendar.onrender.com/ConfirmServlet?token=" + token;
             sendConfirmationEmail(email, link);
 
@@ -78,13 +82,16 @@ public class RegisterServlet extends HttpServlet {
     }
 
     /**
-     * Invia una email all'utente con un link per confermare la registrazione.
-     * @param to Indirizzo email del destinatario
-     * @param link Link di conferma contenente il token univoco
+     * Invia un'email all'utente con il link per completare la registrazione.
+     * Il link contiene un token univoco generato durante la registrazione.
+     *
+     * @param to   Email del destinatario
+     * @param link URL di conferma con token
      */
+    
     private void sendConfirmationEmail(String to, String link) {
         final String from = "arxdraconisgdr@gmail.com";
-        final String password = "vlsuymcdihewfwuv"; // Considerare l'uso di un file di configurazione esterna
+        final String password = "vlsuymcdihewfwuv"; 
 
         // Parametri SMTP per Gmail
         Properties props = new Properties();
@@ -94,7 +101,7 @@ public class RegisterServlet extends HttpServlet {
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
-        // Sessione autenticata
+        // Crea una Session SMTP autenticata con Gmail
         Session mailSession = Session.getInstance(props, new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -103,7 +110,7 @@ public class RegisterServlet extends HttpServlet {
         });
 
         try {
-            // Composizione del messaggio
+            // Composizione ed invio del messaggio
             Message message = new MimeMessage(mailSession);
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
@@ -111,7 +118,6 @@ public class RegisterServlet extends HttpServlet {
             message.setText("Ciao!\n\nPer completare la registrazione, clicca su questo link:\n" + link +
                             "\n\nSe non hai richiesto la registrazione, puoi ignorare questo messaggio.");
 
-            // Invio
             Transport.send(message);
 
         } catch (MessagingException e) {

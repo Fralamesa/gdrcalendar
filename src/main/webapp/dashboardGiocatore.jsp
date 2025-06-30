@@ -1,6 +1,7 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> <%--  Impostazioni base per la pagina JSP --%>
 <%
-    // Controllo di accesso: solo utenti con ruolo "Giocatore" possono accedere
+	// Verifica che l'utente sia autenticato e abbia il ruolo "Master"
+	// In caso contrario, reindirizza alla pagina di login
     if (session == null || session.getAttribute("userEmail") == null || !"Giocatore".equals(session.getAttribute("userRuolo"))) {
         response.sendRedirect("login.jsp");
         return;
@@ -12,16 +13,16 @@
     <meta charset="UTF-8">
     <title>Dashboard Giocatore</title>
 
-    <!-- Importa font Inter da Google Fonts -->
+    <%-- Importazione del font Montserrat da Google Fonts --%>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Imposta il box-sizing globale per evitare overflow imprevisti */
+        /* Applica box-sizing globale */
         * {
             box-sizing: border-box;
         }
 
-        /* Layout principale: pagina a colonna, sfondo con gradiente */
+        /* Stili generali */
         html, body {
             margin: 0;
             padding: 0;
@@ -33,7 +34,7 @@
             flex-direction: column;
         }
 
-        /* Stili condivisi tra header e footer: effetto vetro e ombre */
+        /* Stili per header e footer */
         header, footer {
             background: rgba(255, 255, 255, 0.15);
             color: white;
@@ -51,9 +52,9 @@
    			 top: 0;
     		z-index: 1000;
     		border-bottom: 1px solid rgba(255,255,255,0.1);
-    		background: rgba(30, 30, 30, 0.4); /* più contrasto su sfondo bianco */
+    		background: rgba(30, 30, 30, 0.4); 
    			backdrop-filter: blur(12px);
-    		color: #fff; /* garantisce visibilità del testo */
+    		color: #fff; 
     	}
     		
 
@@ -87,10 +88,10 @@
    			padding: 30px;
    			background: white;
    			box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-  			margin-top: 100px; /* evita che il contenuto finisca sotto l'header */
+  			margin-top: 100px; 
 		}		
 
-        /* Card con sfondo trasparente e blur */
+      	 /* Card per calendario) */
         .card {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
@@ -100,14 +101,14 @@
             margin-bottom: 30px;
         }
 
-        /* Controlli di navigazione del calendario */
+        /* pulssanti per navigare tra i mesi del calendario */
         #calendar-controls {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
         }
 
-        /* Pulsanti dei controlli calendario */
+        /* Stile dei pulsanti di navigazione calendario */
         #calendar-controls button {
             padding: 10px 20px;
             background-color: #ffffff;
@@ -126,7 +127,7 @@
             transform: translateY(-2px);
         }
 
-        /* Tabella del calendario */
+        /* Tabella calendario */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -144,7 +145,7 @@
             height: 80px;
         }
 
-        /* Celle che contengono eventi prenotabili o prenotati */
+        /* Celle che contengono eventi */
         td.has-event {
             background-color: #d0f0fd;
             font-weight: bold;
@@ -152,12 +153,12 @@
             transition: background 0.2s;
         }
 
-        /* Hover su celle con eventi */
+        /* Effetto hover sulle celle con eventi */
         td.has-event:hover {
             background-color: #b2e6fb;
         }
 
-        /* Footer con struttura simile al header */
+        /* Stile footer */
         footer {
             padding: 30px 20px;
             text-align: center;
@@ -165,13 +166,13 @@
             margin-top: auto;
         }
 
-        /* Titolo sezione nel footer */
+        /* Titolo sezioni nel footer */
         .footer-section h3 {
             margin-bottom: 15px;
             color: #fff;
         }
 
-        /* Gruppo di pulsanti nel footer */
+        /* Contenitore pulsanti footer */
         .footer-buttons {
             display: flex;
             justify-content: center;
@@ -180,7 +181,7 @@
             margin-top: 10px;
         }
 
-        /* Stile dei pulsanti nel footer */
+        /* Pulsanti nel footer */
         .footer-buttons button {
             padding: 10px 18px;
             background-color: #ffffff;
@@ -199,7 +200,7 @@
             transform: translateY(-2px);
         }
 
-        /* Overlay per le modali */
+        /* Overlay per la modale */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -226,7 +227,7 @@
             margin-top: 0;
         }
 
-        /* Layout verticale del form */
+        /* Disposizione degli elementi del form */
         .modal-content form {
             display: flex;
             flex-direction: column;
@@ -256,7 +257,7 @@
             background-color: #2980b9;
         }
 
-        /* Pulsante per chiudere la modale (in alto a destra) */
+        /* Icona per chiudere la modale */
         .close-modal {
             float: right;
             font-weight: bold;
@@ -268,62 +269,56 @@
 <body>
 
 
-<!-- Intestazione della dashboard con titolo e info utente -->
+<!-- Intestazione con titolo, dati utente, link per logout -->
 <header>
     <h1>Dashboard Giocatore</h1>
     <div>
-        <!-- Mostra l'email dell'utente attualmente loggato e link per il logout -->
         Benvenuto: <%= session.getAttribute("userEmail") %> | <a href="logout.jsp">Logout</a>
     </div>
 </header>
 
-<!-- Contenuto principale della pagina -->
+<!-- Sezione calendario eventi -->
 <div class="main-content">
     <div class="card" id="calendar-section">
-        <h2>Calendario Eventi</h2>
-        <!-- Controlli per navigare tra i mesi -->
+        <h2>Calendario Eventi</h2>      
         <div id="calendar-controls">
             <button id="prev-month">« Mese precedente</button>
             <span id="current-month" style="line-height: 36px; flex: 0 1 100px; text-align: center;"></span>
             <button id="next-month">Mese successivo »</button>
-        </div>
-        <!-- Contenitore in cui verrà generato dinamicamente il calendario -->
+        </div>     
         <div id="calendar"></div>
     </div>
 </div>
 
-<!-- Footer con azioni disponibili per il giocatore -->
+<!-- Footer con pulsanti -->
 <footer>
     <div class="footer-section">
         <h3>Impostazioni</h3>
         <div class="footer-buttons">
-            <!-- Pulsante per aprire la modale di aggiornamento email/password -->
             <button id="btn-update-auth">Gestione Profilo</button>
         </div>
     </div>
 </footer>
 
-<!-- Struttura base della modale riutilizzabile -->
+<!-- Struttura della modale generica  -->
 <div id="modal" class="modal-overlay">
-    <div class="modal-content">
-        <!-- Pulsante per chiudere la modale -->
+    <div class="modal-content">       
         <span class="close-modal" onclick="closeModal()">×</span>
-        <!-- Area in cui verrà caricato dinamicamente il contenuto della modale -->
         <div id="modal-body"></div>
     </div>
 </div>
 
-<!-- Script per logica calendario e interazioni -->
+<!-- Script per logica calendario -->
 <script src="js/calendar.js"></script>
 
 <script>
-    // Funzione per aprire la modale e caricare contenuto HTML dinamico all'interno
+//Mostra la modale e inserisce l'HTML passato come contenuto
     function openModal(html) {
         document.getElementById("modal-body").innerHTML = html;
         document.getElementById("modal").style.display = "flex";
     }
 
-    // Funzione per chiudere la modale
+	 // Nasconde la modale
     function closeModal() {
         document.getElementById("modal").style.display = "none";
     }
@@ -351,9 +346,9 @@
         bindDeleteForm();
     };
 
-    // Collega le funzioni di invio ai form della modale di autenticazione
+
     function bindAuthForms() {
-        // Gestione dell'invio del form di aggiornamento email
+    	// Form per aggiornare email
         document.getElementById('update-email-form').onsubmit = async (e) => {
             e.preventDefault();
             const data = new URLSearchParams(new FormData(e.target));
@@ -363,7 +358,7 @@
             closeModal();
         };
 
-        // Gestione dell'invio del form di aggiornamento password
+   	  	// Form per aggiornare password
         document.getElementById('update-password-form').onsubmit = async (e) => {
             e.preventDefault();
             const data = new URLSearchParams(new FormData(e.target));
@@ -374,7 +369,7 @@
         };
     }
 
-    // Gestisce l'invio del form per eliminare l'account
+ //Gestisce invio del form per eliminare account
 function bindDeleteForm() {
     document.getElementById('delete-account-form').onsubmit = async (e) => {
         e.preventDefault();

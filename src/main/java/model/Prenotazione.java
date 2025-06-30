@@ -1,27 +1,25 @@
 package model;
 
 /**
- * Rappresenta una prenotazione a un evento da parte di un utente.
- * Contiene l'indirizzo email dell'utente e un'eventuale nota allegata alla prenotazione.
+ * Modello che rappresenta una prenotazione a un evento.
+ * Include l'email dell'utente e una nota inserita al momento della prenotazione.
  */
+
 public class Prenotazione {
-    private String email; // Email dell'utente che ha effettuato la prenotazione
-    private String note;  // Nota opzionale associata alla prenotazione
+    private String email; //  identificativoa dell'utente che ha prenotato
+    private String note;  
 
     /**
-     * Costruttore della prenotazione.
-     *
-     * @param email Email dell'utente
-     * @param note Nota inserita dall'utente al momento della prenotazione
+     * Costruisce un oggetto Prenotazione a partire dai dati letti dal DB.
      */
+    
     public Prenotazione(String email, String note) {
         this.email = email;
         this.note = note;
     }
 
-    // Getter per l'email dell'utente
+ // Getters per i dati statici letti da db (tabella prenotazioni)
+    
     public String getEmail() { return email; }
-
-    // Getter per la nota associata alla prenotazione
     public String getNote() { return note; }
 }

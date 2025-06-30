@@ -1,21 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> <%-- Impostazioni JSP: linguaggio Java, contenuto HTML e codifica UTF-8 --%>
+    pageEncoding="UTF-8"%> <%-- Impostazioni base per la pagina JSP --%>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>GDRCalendar - Home</title> <%-- Titolo visualizzato nella scheda del browser --%>
+    <title>GDRCalendar - Home</title> <%-- Titolo della pagina --%>
     
     <%-- Importazione del font Montserrat da Google Fonts --%>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Applica box-sizing a tutti gli elementi */
+        /* Applica box-sizing globale */
         * {
             box-sizing: border-box;
         }
 
-        /* Stile generale della pagina */
+        /* Stili generali */
         body {
             margin: 0;
             padding: 0;
@@ -27,10 +27,10 @@
             justify-content: center;
             align-items: center;
             color: #fff;
-            position: relative; /* Necessario per posizionare elementi assoluti come le particelle */
+            position: relative;
         }
 
-        /* Contenitore centrale con effetto vetro e animazione di ingresso */
+        /* Contenitore centrale con effetto vetro */
         .container {
             background: rgba(255, 255, 255, 0.1);
             padding: 50px;
@@ -58,7 +58,7 @@
             justify-content: center;
         }
 
-        /* Stile base dei link/pulsanti */
+        /* Stile dei link/pulsanti */
         a {
             text-decoration: none;
             padding: 15px 35px;
@@ -72,7 +72,7 @@
             overflow: hidden; /* Necessario per effetto luce interno */
         }
 
-        /* Effetto luce al passaggio */
+        /* Luce in movimento sull’hover */
         a::before {
             content: "";
             position: absolute;
@@ -88,7 +88,7 @@
             left: 100%;
         }
 
-        /* Sollevamento e ombra al passaggio del mouse */
+        /*  Effetto sollevamento al passaggio */
         a:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -102,7 +102,7 @@
             overflow: hidden;
         }
 
-        /* Singola particella animata */
+        /* Singola particella */
         .particle {
             position: absolute;
             width: 8px;
@@ -113,7 +113,7 @@
             animation: float 8s infinite ease-in-out;
         }
 
-        /* Animazione flottante verticale delle particelle */
+        /* Animazione flottante*/
         @keyframes float {
             0% {
                 transform: translateY(0) scale(1);
@@ -129,7 +129,7 @@
             }
         }
 
-        /* Animazione di comparsa del contenitore principale */
+        /* Animazione di comparsa */
         @keyframes fadeIn {
             to {
                 transform: translateY(0);
@@ -152,10 +152,10 @@
     </div>
 
     <div class="container">
-        <%-- Messaggio di benvenuto nella pagina principale --%>
+        <%-- Messaggio di benvenuto --%>
         <h1>Benvenuto su <strong>GDRCalendar</strong>!</h1>
         
-        <%-- Pulsanti per accedere o registrarsi --%>
+        <%-- Link per pagine di registrazione e login --%>
         <div class="buttons">
             <a href="register.jsp">Registrati</a>
             <a href="login.jsp">Login</a>

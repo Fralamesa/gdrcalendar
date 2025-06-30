@@ -9,17 +9,23 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
+/**
+ * Servlet che gestisce il reset della password
+ */
+
 @WebServlet("/ResetPasswordServlet")
 public class ResetPasswordServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private UserDAO userDAO;
 
-    // Inizializza il DAO per accedere al database degli utenti
+ // Inizializza l'oggetto UserDAO
+    
     public void init() {
         userDAO = new UserDAO();
     }
 
     // Gestisce le richieste GET mostrando il form per l'inserimento della nuova password
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String token = request.getParameter("token");
@@ -42,7 +48,7 @@ public class ResetPasswordServlet extends HttpServlet {
         response.getWriter().println("</body></html>");
     }
 
-    // Gestisce le richieste POST per aggiornare la password nel database
+    // Gestisce le richieste POST per aggiornare la password nel db
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -62,11 +68,11 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Genera l'hash sicuro della nuova password usando BCrypt
+        // Genera l'hash della nuova password
         String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
 
         try {
-            // Aggiorna la password nel database utilizzando il token come riferimento
+            // Aggiorna la password nel db  utilizzando il token
             boolean success = userDAO.updatePasswordByToken(token, hashed);
             if (success) {
                 // Risposta HTML con messaggio di successo e reindirizzamento automatico al login
@@ -79,12 +85,11 @@ public class ResetPasswordServlet extends HttpServlet {
                 response.getWriter().println("<p>Verrai reindirizzato alla pagina di login tra pochi secondi...</p>");
                 response.getWriter().println("</body></html>");
             } else {
-                // Il token potrebbe essere errato o già utilizzato
+                // Il token è errato o già utilizzato
                 response.getWriter().println("Token non valido o già usato.");
             }
-        } catch (SQLException e) {
-            // Gestione delle eccezioni SQL
-            throw new ServletException(e);
+        } catch (SQLException e) {         
+            throw new ServletException(e); // Gestione delle eccezioni SQL
         }
     }
 }

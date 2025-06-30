@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> <%--  Impostazioni base per la pagina JSP --%>
 <%
     // Verifica che l'utente sia autenticato e abbia il ruolo "Master"
     // In caso contrario, reindirizza alla pagina di login
@@ -13,16 +13,16 @@
     <meta charset="UTF-8">
     <title>Dashboard Master</title>
 
-    <!-- Importazione font Inter da Google Fonts -->
+    <%-- Importazione del font Montserrat da Google Fonts --%>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Imposta box-sizing per tutti gli elementi */
+        /* Applica box-sizing globale */
         * {
             box-sizing: border-box;
         }
 
-        /* Stili di base per html e body: layout verticale, sfondo gradiente */
+        /* Stili generali */
         html, body {
             margin: 0;
             padding: 0;
@@ -34,7 +34,7 @@
             flex-direction: column;
         }
 
-        /* Stili condivisi per header e footer: sfondo traslucido e ombra */
+        /* Stili per header e footer */
         header, footer {
             background: rgba(255, 255, 255, 0.15);
             color: white;
@@ -42,7 +42,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
         
-		/* Header fisso in alto con layout flessibile */
+	  /* Header fisso in alto con layout flessibile */
       header {
     		padding: 20px 40px;
     		display: flex;
@@ -52,9 +52,9 @@
    			 top: 0;
     		z-index: 1000;
     		border-bottom: 1px solid rgba(255,255,255,0.1);
-    		background: rgba(30, 30, 30, 0.4); /* più contrasto su sfondo bianco */
+    		background: rgba(30, 30, 30, 0.4); 
    			backdrop-filter: blur(12px);
-    		color: #fff; /* garantisce visibilità del testo */
+    		color: #fff;
     	}
     		
 
@@ -66,7 +66,7 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        /* Area utente nel header */
+        /* Area utente header */
         header div {
             font-size: 0.95em;
             display: flex;
@@ -74,7 +74,7 @@
             gap: 10px;
         }
 
-        /* Link nel header (es. logout) */
+        /* Link header*/
         header a {
             color: #ffffff;
             text-decoration: none;
@@ -85,7 +85,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Effetto hover sul link del header */
+        /* Effetto hover su link  header */
         header a:hover {
             background: rgba(255, 255, 255, 0.25);
         }
@@ -96,10 +96,10 @@
    			padding: 30px;
    			background: white;
    			box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-  			margin-top: 100px; /* evita che il contenuto finisca sotto l'header */
+  			margin-top: 100px;
 		}	
 
-        /* Card utilizzate per contenere sezioni (es. calendario) */
+        /* Card per calendario) */
         .card {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
@@ -109,7 +109,7 @@
             margin-bottom: 30px;
         }
 
-        /* Controlli per navigare tra i mesi del calendario */
+        /* pulssanti per navigare tra i mesi del calendario */
         #calendar-controls {
             display: flex;
             justify-content: space-between;
@@ -129,13 +129,13 @@
             transition: all 0.3s ease;
         }
 
-        /* Effetto hover sui pulsanti calendario */
+        /* Effetto hover sui pulsanti */
         #calendar-controls button:hover {
             background: #f0f0f0;
             transform: translateY(-2px);
         }
 
-        /* Tabella del calendario */
+        /* Tabella calendario */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -166,7 +166,7 @@
             background-color: #b2e6fb;
         }
 
-        /* Stile del footer */
+        /* Stile footer */
         footer {
             padding: 30px 20px;
             text-align: center;
@@ -174,13 +174,13 @@
             margin-top: auto;
         }
 
-        /* Titolo delle sezioni nel footer */
+        /* Titolo sezioni nel footer */
         .footer-section h3 {
             margin-bottom: 15px;
             color: #fff;
         }
 
-        /* Contenitore dei pulsanti nel footer */
+        /* Contenitore pulsanti footer */
         .footer-buttons {
             display: flex;
             justify-content: center;
@@ -189,7 +189,7 @@
             margin-top: 10px;
         }
 
-        /* Pulsanti di azione nel footer */
+        /* Pulsanti nel footer */
         .footer-buttons button {
             padding: 10px 18px;
             background-color: #ffffff;
@@ -231,15 +231,18 @@
             animation: fadeIn 0.4s ease-out;
         }
 
+		/* Titolo della modale */
         .modal-content h3 {
-            margin-top: 0; /* Rimuove il margine superiore per il titolo della modale */
+            margin-top: 0; 
         }
 
+		/* Disposizione degli elementi del form */
         .modal-content form {
             display: flex;
-            flex-direction: column; /* Disposizione verticale degli elementi del form */
+            flex-direction: column; 
         }
-
+		
+		/* Stile per input, select e pulsanti all'interno della modale */
         .modal-content input,
         .modal-content select,
         .modal-content button {
@@ -247,26 +250,31 @@
             padding: 12px;
             font-size: 14px;
             border-radius: 8px;
-            border: 1px solid #ccc; /* Bordo sottile e chiaro per uniformità */
+            border: 1px solid #ccc; 
         }
 
+		/* Pulsante nella modale */
         .modal-content button {
-            background-color: #3498db; /* Colore di sfondo blu */
+            background-color: #3498db; 
             color: white;
             border: none;
             cursor: pointer;
         }
 
+		/* Effetto hover sui pulsanti modale */
         .modal-content button:hover {
-            background-color: #2980b9; /* Colore più scuro al passaggio del mouse */
+            background-color: #2980b9; 
         }
 
+		/* Icona per chiudere la modale */
         .close-modal {
             float: right;
             font-weight: bold;
             color: #999;
-            cursor: pointer; /* Icona per chiudere la modale */
+            cursor: pointer; 
         }
+
+		/* Finestra modale per mostrare i dettagli di un evento */
 
         #event-details {
             display: none;
@@ -279,18 +287,20 @@
             padding: 30px;
             z-index: 1000;
             max-width: 400px;
-            width: 90%; /* Finestra modale per mostrare i dettagli di un evento */
+            width: 90%; 
         }
+
+		/* Animazione di comparsa modale */
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); } /* Animazione di comparsa modale */
+            to { opacity: 1; transform: translateY(0); } 
         }
     </style>
 </head>
 <body>
 
-<!-- Intestazione con titolo e dati utente loggato -->
+<!-- Intestazione con titolo e dati utente, link per logout -->
 <header>
     <h1>Dashboard Master</h1>
     <div>
@@ -298,7 +308,7 @@
     </div>
 </header>
 
-<!-- Contenuto principale: sezione calendario eventi -->
+<!-- Sezione calendario eventi -->
 <div class="main-content">
     <div class="card" id="calendar-section">
         <h2>Calendario Eventi</h2>
@@ -307,11 +317,11 @@
             <span id="current-month" style="line-height: 36px; flex: 0 1 100px; text-align: center;"></span>
             <button id="next-month">Mese successivo »</button>
         </div>
-        <div id="calendar"></div> <!-- Area in cui verrà generato il calendario -->
+        <div id="calendar"></div>
     </div>
 </div>
 
-<!-- Footer con pulsanti di gestione -->
+<!-- Footer con pulsanti -->
 <footer>
     <div class="footer-section">
         <h3>Impostazioni</h3>
@@ -324,20 +334,20 @@
     </div>
 </footer>
 
-<!-- Struttura della modale generica riutilizzabile -->
+<!-- Struttura della modale generica  -->
 <div id="modal" class="modal-overlay">
     <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">×</span> <!-- Pulsante chiusura -->
-        <div id="modal-body"></div> <!-- Contenuto dinamico della modale -->
+        <span class="close-modal" onclick="closeModal()">×</span> 
+        <div id="modal-body"></div> 
     </div>
 </div>
 
-<!-- Contenitore modale dedicato ai dettagli evento -->
+<!-- Contenitore modale dettagli evento -->
 <div id="event-details">
     <div id="event-content"></div>
 </div>
 
-<!-- Script per logica calendario e interazioni -->
+<!-- Script per logica calendario -->
 <script src="js/calendar.js"></script>
 
 <script>
@@ -347,7 +357,7 @@ function openModal(html) {
     document.getElementById("modal").style.display = "flex";
 }
 
-// Nasconde la modale attualmente visibile
+// Nasconde la modale
 function closeModal() {
     document.getElementById("modal").style.display = "none";
 }
@@ -375,7 +385,7 @@ document.getElementById("btn-create-event").onclick = () => {
     bindEventForm();
 };
 
-// Mostra la modale per aggiungere e visualizzare i tipi di gioco
+// Mostra la modale per aggiungere / cancellare e visualizzare i tipi di gioco
 document.getElementById("btn-config-giochi").onclick = () => {
     openModal(`
         <h3>Configura Giochi</h3>
@@ -385,7 +395,7 @@ document.getElementById("btn-config-giochi").onclick = () => {
         </form>
         <ul id="game-type-list"></ul>
     `);
-    // Carica la lista dei tipi di gioco esistenti
+    // Carica la lista dei tipi di gioco
     loadGameTypesList();
     // Associa la funzione per aggiungere un nuovo tipo
     document.getElementById('add-game-type-form').onsubmit = addGameType;
@@ -427,7 +437,7 @@ document.getElementById("btn-update-role").onclick = () => {
             <button type="submit">Aggiorna</button>
         </form>
     `);
-    // Invio asincrono del form per aggiornare il ruolo
+    // Invio del form per aggiornare il ruolo
     document.getElementById('update-role-form').onsubmit = async (e) => {
         e.preventDefault();
         const data = new URLSearchParams(new FormData(e.target));
@@ -446,7 +456,7 @@ function bindEventForm() {
         const inizio = new Date(formData.get("data_inizio"));
         const fine = new Date(formData.get("data_fine"));
 
-        // Validazione: la data di fine deve essere successiva a quella di inizio
+        // Validazione: data di fine > data di inizio
         if (fine < inizio) {
             alert("La data di fine non può essere prima della data di inizio.");
             return;
@@ -461,7 +471,7 @@ function bindEventForm() {
 }
 
 function bindAuthForms() {
-    // Form per aggiornare l'email
+    // Form per aggiornare email
     document.getElementById('update-email-form').onsubmit = async (e) => {
         e.preventDefault();
         const data = new URLSearchParams(new FormData(e.target));
@@ -471,7 +481,7 @@ function bindAuthForms() {
         closeModal();
     };
 
-    // Form per aggiornare la password
+    // Form per aggiornare password
     document.getElementById('update-password-form').onsubmit = async (e) => {
         e.preventDefault();
         const data = new URLSearchParams(new FormData(e.target));
@@ -482,7 +492,7 @@ function bindAuthForms() {
     };
 }
 
-//Gestisce l'invio del form per eliminare l'account
+//Gestisce invio del form per eliminare account
 function bindDeleteForm() {
     document.getElementById('delete-account-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -495,7 +505,7 @@ function bindDeleteForm() {
 
         const data = new URLSearchParams();
         data.append("action", "deleteAccount");
-        data.append("confirmDelete", confirmInput); // questa è la chiave mancante!
+        data.append("confirmDelete", confirmInput);
 
         const res = await fetch("ProfileServlet", {
             method: "POST",
@@ -528,7 +538,7 @@ async function loadGameTypes(selectId) {
     });
 }
 
-// Carica e mostra la lista dei tipi di gioco nella configurazione
+// Carica e mostra la lista dei tipi di gioco
 async function loadGameTypesList() {
     const res = await fetch("GameTypeServlet?action=list");
     const types = await res.json();
@@ -563,7 +573,7 @@ async function deleteGameType(name) {
         const data = new URLSearchParams({ action: "delete", nome: name });
         const res = await fetch("GameTypeServlet", { method: "POST", body: data });
         alert(await res.text());
-        loadGameTypesList(); // Ricarica la lista dopo eliminazione
+        loadGameTypesList(); // Ricarica la lista 
         }
     }
 </script>

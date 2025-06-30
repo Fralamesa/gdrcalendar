@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Imposta il mese corrente in formato 'YYYY-MM' e inizializza l'elenco dei tipi di gioco validi
+  // Imposta il mese corrente in formato 'YYYY-MM' e inizializza l'elenco dei tipi di gioco
   let currentMonth = new Date().toISOString().slice(0, 7);
   let validGameTypes = [];
 
-  // Crea un contenitore modale per i dettagli dell'evento, inizialmente nascosto
+  // Crea un contenitore modale per i dettagli dell'evento
   const detailContainer = document.createElement('div');
   detailContainer.id = 'event-details';
   detailContainer.style.display = 'none';
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
   `;
   document.head.appendChild(style);
 
-  // Crea un overlay per lo sfondo scuro dietro la modale
+  // Crea un overlay per lo sfondo dietro la modale
   const overlay = document.createElement('div');
   overlay.id = 'event-overlay';
   overlay.style.display = 'none';
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const table = document.createElement('table');
 
-        // Intestazione con i giorni della settimana (Lunedì -> Domenica)
+        // Intestazione con i giorni della settimana
         const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
@@ -103,18 +103,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const tbody = document.createElement('tbody');
         const d = new Date(month + "-01");
 
-        // Calcola il primo giorno visibile nel calendario (settimana che inizia con lunedì)
+        // Calcola il primo giorno visibile nel calendario
         const startDay = (d.getDay() + 6) % 7;
         d.setDate(1 - startDay);
 
-        // Ottiene la data odierna per confronto
+        // Ottiene la data odierna
         const today = new Date();
 
         // Crea un massimo di 6 righe (settimane)
         for (let week = 0; week < 6; week++) {
           const tr = document.createElement('tr');
 
-          // Crea 7 celle (giorni) per ogni riga
+          // Crea 7 celle pe riga
           for (let day = 0; day < 7; day++) {
             const td = document.createElement('td');
             const cellDate = new Date(d); // Copia la data corrente
@@ -139,10 +139,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 td.style.borderRadius = '8px';
               }
 
-              const isoDate = cellDate.toISOString().slice(0, 10); // YYYY-MM-DD
+              const isoDate = cellDate.toISOString().slice(0, 10);
 
               if (data[isoDate]) {
-                // Se ci sono eventi in questa data, aggiungili alla cella
+                // Se ci sono eventi in questa data, li aggiunge  alla cella
                 td.classList.add('has-event');
 
 				data[isoDate].forEach(ev => {
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
               }
             } else {
-              // Giorni fuori dal mese corrente: sfondo grigio
+              // Stile per i giorni non appartenenti al mese corrente
               td.style.background = '#f0f0f0';
               td.style.color = '#aaa';
             }
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
         table.appendChild(tbody);
         container.appendChild(table);
 
-        // Calcola e mostra il nome del mese e l’anno una sola volta, in alto
+        // Calcola e mostra il nome del mese e l’anno
         const dateObj = new Date(month + "-01");
         const monthName = dateObj.toLocaleString('it-IT', { month: 'long' });
         const year = dateObj.getFullYear();
@@ -199,19 +199,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-// Funzione globale per aprire i dettagli di un evento
+  // Funzione globale per aprire i dettagli di un evento
   window.openEventDetails = function (id) {
-    // Recupera i dettagli dell’evento dal server
+    // Recupera i dettagli dell’evento
     fetch("EventServlet?id=" + id)
       .then(res => res.json())
       .then(ev => {
-        // Formatter per le date in stile italiano
+        // Formatter per le date
         const formatter = new Intl.DateTimeFormat('it-IT', {
           dateStyle: 'short',
           timeStyle: 'short'
         });
 
-        // Popola la modale con le informazioni dettagliate dell'evento
+        // Popola la modale con le info dell'evento
         const container = document.getElementById('event-content');
         container.innerHTML = `
           <p><strong>Titolo:</strong> ${ev.titolo}</p>

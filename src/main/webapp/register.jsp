@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> 
+    pageEncoding="UTF-8"%> <%--  Impostazioni base per la pagina JSP --%>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -7,16 +7,16 @@
     <meta charset="UTF-8">
     <title>Registrazione - GDRCalendar</title>
 
-    <!-- Importa font personalizzato da Google Fonts -->
+    <%-- Importazione del font Montserrat da Google Fonts --%>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Applica box-sizing a tutti gli elementi per semplificare il layout */
+        /* Applica box-sizing globale */
         * {
             box-sizing: border-box;
         }
 
-        /* Stili base del body: centratura, sfondo sfumato e font leggibile */
+        /* Stili generali */
         body {
             margin: 0;
             padding: 0;
@@ -30,7 +30,7 @@
             overflow: hidden;
         }
 
-        /* Contenitore centrale con effetto vetro e animazione di entrata */
+        /*  Contenitore centrale con effetto vetro */
         .container {
             background: rgba(255, 255, 255, 0.15);
             padding: 50px 60px;
@@ -45,7 +45,7 @@
             opacity: 0; 
         }
 
-        /* Titolo principale con ombra per contrasto su sfondo chiaro */
+        /* Titolo principale */
         h2 {
             margin-bottom: 30px;
             color: #fff;
@@ -53,14 +53,14 @@
             text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
         }
 
-        /* Layout verticale del form con spaziatura uniforme tra campi */
+        /* Layout del form*//
         form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        /* Campi di input e select con aspetto coerente e arrotondato */
+        /* Stile per i campi di input e select*/
         input, select {
             padding: 12px 18px;
             border: none;
@@ -72,12 +72,12 @@
             transition: box-shadow 0.3s ease;
         }
 
-        /* Evidenziazione visiva del campo attivo */
+        /* Effetto evidenziato al focus sui campi */
         input:focus, select:focus {
             box-shadow: 0 0 5px rgba(255, 255, 255, 0.7), inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        /* Stile del bottone di invio: contrasto e reattività */
+        /* Stile del pulsante per inviare il form */
         button {
             padding: 12px 25px;
             border: none;
@@ -91,19 +91,19 @@
             transition: all 0.3s ease;
         }
 
-        /* Effetto hover sul bottone per indicare l’interattività */
+       /* Effetto sollevamento al passaggio */
         button:hover {
             background: #f0f0f0;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
-        /* Spaziatura per il paragrafo inferiore */
+        /* Paragrafi per i link */
         p {
             margin-top: 20px;
         }
 
-        /* Link alla home visibile su sfondo chiaro */
+        /* Link leggibili su sfondo colorato */
         a {
             color: #fff;
             text-decoration: none;
@@ -111,12 +111,12 @@
             transition: color 0.3s ease;
         }
 
-        /* Leggera variazione colore al passaggio del mouse */
+        /* Cambia colore al passaggio */
         a:hover {
             color: #e0e0e0;
         }
 
-        /* Definizione dell’animazione per l’apparizione fluida del form */
+        /* Animazione per far comparire il contenitore */
         @keyframes fadeIn {
             to {
                 opacity: 1;
@@ -127,27 +127,27 @@
 </head>
 <body>
     <div class="container">
-        <%-- Titolo della sezione di registrazione --%>
+        <%-- Titolo principale --%>
         <h2>Registrati</h2>
 
-        <%-- Form che invia i dati alla servlet RegisterServlet con metodo POST --%>
+        <%-- Form che invia i dati alla servlet RegisterServlet--%>
         <form action="RegisterServlet" method="post">
-            <input type="text" name="nome" placeholder="Nome" required> <!-- Campo obbligatorio: nome utente -->
-            <input type="text" name="cognome" placeholder="Cognome" required> <!-- Campo obbligatorio: cognome utente -->
-            <input type="email" name="email" placeholder="Email" required> <!-- Campo email con validazione lato client -->
-            <input type="password" name="password" placeholder="Password" required> <!-- Password (mascherata) -->
-            <input type="password" name="confirmPassword" placeholder="Conferma Password" required> <!-- Conferma password per coerenza -->
+            <input type="text" name="nome" placeholder="Nome" required> 
+            <input type="text" name="cognome" placeholder="Cognome" required>
+            <input type="email" name="email" placeholder="Email" required> 
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirmPassword" placeholder="Conferma Password" required> 
 
             <%-- Select con elenco di community disponibili (attualmente solo una opzione) --%>
             <select name="community" required>
-                <option value="">Seleziona Community</option> <!-- Opzione placeholder -->
-                <option value="Arx Draconis">Arx Draconis</option> <!-- Unica community disponibile al momento -->
+                <option value="">Seleziona Community</option> 
+                <option value="Arx Draconis">Arx Draconis</option> 
             </select>
 
-            <button type="submit">Registrati</button> <!-- Bottone per invio dati -->
+            <button type="submit">Registrati</button> 
         </form>
 
-        <%-- Link per tornare alla home page principale (index.jsp) --%>
+        <%-- Link per homepage --%>
         <p><a href="index.jsp">Torna alla Home</a></p>
     </div>
 </body>

@@ -8,30 +8,33 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 /**
- * Servlet per la gestione del profilo utente autenticato.
- * Supporta aggiornamento dell'email, della password e del ruolo (solo per Master).
+ * Servlet che gestisce tutte le modifiche relative al profilo utente. Permette di:
+ * - Aggiornare email / password o eliminare account 
+ * - Cambiare il ruolo di un altro utente (solo master)
  */
+
 @WebServlet("/ProfileServlet")
 public class ProfileServlet extends HttpServlet {
   private UserDAO userDAO;
 
-  /**
-   * Inizializza il DAO per l'accesso ai dati utente.
-   */
+  // Inizializza l'oggetto UserDAO
+  
   @Override
   public void init() {
     userDAO = new UserDAO();
   }
 
   /**
-   * Gestisce operazioni di aggiornamento profilo utente tramite richieste POST.
-   * Richiede sessione attiva e autenticata.
-   *
-   * Azioni supportate:
-   * - updateEmail     → cambia l'email dell'utente corrente
-   * - updatePassword  → cambia la password dell'utente corrente
-   * - updateRole      → cambia il ruolo di un altro utente (solo se l'utente è Master)
+   * Riceve richieste POST per modificare il profilo utente.
+   * L'utente deve essere autenticato (sessione attiva).
+   * Le azioni disponibili sono:
+   * - updateEmail: cambia l’indirizzo email dell’utente
+   * - updatePassword: imposta una nuova password
+   * - updateRole: cambia il ruolo di un altro utente (solo se sei un Master)
+   * - deleteAccount: elimina l’utente e tutte le sue prenotazioni
    */
+  
+  
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -49,7 +52,7 @@ public class ProfileServlet extends HttpServlet {
     try {
       switch (action) {
 
-        // === Aggiornamento Email ===
+        // Aggiornamento Email
         case "updateEmail":
           String newEmail = request.getParameter("newEmail");
           userDAO.updateEmail(currentEmail, newEmail);
@@ -57,7 +60,7 @@ public class ProfileServlet extends HttpServlet {
           response.getWriter().write("Email aggiornata!");
           break;
 
-        // === Aggiornamento Password ===
+        // Aggiornamento Password
         case "updatePassword":
           String newPassword = request.getParameter("newPassword");
           String confirm = request.getParameter("confirmPassword");
@@ -70,7 +73,7 @@ public class ProfileServlet extends HttpServlet {
           }
           break;
 
-        // === Aggiornamento Ruolo di un altro utente (solo Master) ===
+        // Aggiornamento ruolo di un altro utente
         case "updateRole":
           String userRole = (String) session.getAttribute("userRuolo");
           if (!"Master".equals(userRole)) {
@@ -92,7 +95,7 @@ public class ProfileServlet extends HttpServlet {
           }
           // Elimina prima tutte le prenotazioni associate
           userDAO.deletePrenotazioniByEmail(currentEmail);
-          // Elimina l'account utente
+          // Poi l'account utente
           userDAO.deleteUserByEmail(currentEmail);
           session.invalidate();
           response.getWriter().write("Account eliminato con successo.");
@@ -100,7 +103,7 @@ public class ProfileServlet extends HttpServlet {
       }
 
     } catch (Exception e) {
-      e.printStackTrace(); // utile in fase di debug
+      e.printStackTrace();  // Per debug server
       response.getWriter().write("Errore: " + e.getMessage());
     }
   }

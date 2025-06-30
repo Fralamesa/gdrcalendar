@@ -1,26 +1,28 @@
 package model;
 
 /**
- * Modello dati che rappresenta un utente del sistema.
+ * Modello che rappresenta un utente del sistema.
  * Include informazioni anagrafiche, credenziali di accesso,
  * ruolo nel sistema e appartenenza a una community.
  */
+
 public class User {
 
-    private int id;                   // Identificativo univoco dell'utente (PK nel DB)
+    private int id;                  // Identificativo univoco dell'utente
     private String nome;             // Nome dell'utente
     private String cognome;          // Cognome dell'utente
-    private String email;            // Indirizzo email (usato come identificatore per login)
-    private String passwordHash;     // Hash sicuro della password (BCrypt)
-    private String ruolo;            // Ruolo assegnato (es. "Giocatore" o "Master")
+    private String email;            // Indirizzo email
+    private String passwordHash;     // Hash della password
+    private String ruolo;            // Ruolo assegnato ("Giocatore" o "Master")
     private String community;        // Nome della community a cui l'utente appartiene
 
     /**
-     * Costruttore vuoto richiesto per l'uso con framework o serializzazione (es. Gson, JSP, Hibernate).
+     * Costruttore vuoto richiesto per il framework.
      */
+    
     public User() {}
 
-    // === Getter & Setter ===
+    // Getters e setters
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

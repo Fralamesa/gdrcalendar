@@ -1,21 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> <%-- Impostazioni JSP: output HTML, codifica UTF-8, linguaggio Java --%>
+    pageEncoding="UTF-8"%> <%--  Impostazioni base per la pagina JSP --%>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Login - GDRCalendar</title> <%-- Titolo visibile nella scheda del browser --%>
+    <title>Login - GDRCalendar</title> <%-- Titolo della pagina --%>
 
     <%-- Importazione del font Montserrat da Google Fonts --%>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Box model coerente per tutti gli elementi */
+        /* Applica box-sizing globale */
         * {
             box-sizing: border-box;
         }
 
-        /* Impostazioni di base per corpo pagina */
+        /* Stili generali */
         body {
             margin: 0;
             padding: 0;
@@ -29,7 +29,7 @@
             overflow: hidden;
         }
 
-        /* Contenitore centrale con effetto vetro e animazione di comparsa */
+        /*  Contenitore centrale con effetto vetro */
         .container {
             background: rgba(255, 255, 255, 0.15);
             padding: 50px 60px;
@@ -44,7 +44,7 @@
             opacity: 0;
         }
 
-        /* Titolo del modulo */
+        /* Titolo principale */
         h2 {
             margin-bottom: 30px;
             color: #fff;
@@ -52,14 +52,14 @@
             text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
         }
 
-        /* Layout verticale del form con spaziatura tra i campi */
+        /* Layout del form*/
         form {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        /* Stile comune per i campi di input */
+        /* Stile per i campi di input */
         input {
             padding: 12px 18px;
             border: none;
@@ -90,19 +90,19 @@
             transition: all 0.3s ease;
         }
 
-        /* Effetto al passaggio del mouse sul pulsante */
+        /* Effetto sollevamento al passaggio */
         button:hover {
             background: #f0f0f0;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
-        /* Paragrafi sotto il form, usati per link aggiuntivi */
+        /* Paragrafi per i link */
         p {
             margin-top: 20px;
         }
 
-        /* Link testuali chiari e leggibili su sfondo colorato */
+        /* Link leggibili su sfondo colorato */
         a {
             color: #fff;
             text-decoration: none;
@@ -110,12 +110,12 @@
             transition: color 0.3s ease;
         }
 
-        /* Cambia colore al passaggio del mouse */
+        /* Cambia colore al passaggio */
         a:hover {
             color: #e0e0e0;
         }
 
-        /* Definizione animazione per far comparire il contenitore */
+        /* Animazione per far comparire il contenitore */
         @keyframes fadeIn {
             to {
                 opacity: 1;
@@ -127,19 +127,19 @@
 
 <body>
     <div class="container">
-        <h2>Login</h2> <%-- Titolo principale visibile sopra il modulo --%>
+        <h2>Login</h2> <%-- Titolo principale  --%>
 
-        <%-- Form che invia le credenziali alla servlet LoginServlet --%>
+        <%-- Form che invia le credenziali alla LoginServlet --%>
         <form action="LoginServlet" method="post">
-            <input type="email" name="email" placeholder="Email" required> <%-- Campo email obbligatorio --%>
-            <input type="password" name="password" placeholder="Password" required> <%-- Campo password obbligatorio --%>
-            <button type="submit">Accedi</button> <%-- Pulsante per eseguire il login --%>
+            <input type="email" name="email" placeholder="Email" required> 
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Accedi</button>
         </form>
 
-        <%-- Link per reindirizzare alla pagina di recupero password --%>
+        <%-- Link per pagina di recupero password --%>
         <p><a href="recoverPassword.jsp">Password dimenticata?</a></p>
 
-        <%-- Link per tornare alla homepage --%>
+        <%-- Link per homepage --%>
         <p><a href="index.jsp">Torna alla Home</a></p>
     </div>
 </body>

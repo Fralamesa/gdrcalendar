@@ -4,24 +4,31 @@ import model.User;
 import java.sql.*;
 import org.mindrot.jbcrypt.BCrypt;
 
+
+/**
+ * Classe DAO (Data Access Object) che gestisce tutte le operazioni
+ * di lettura e scrittura relative agli utenti nel database.
+ */
+
+
 public class UserDAO {
-    // Parametri di connessione al database PostgreSQL su Render
+    
+	// Parametri di connessione al database PostgreSQL
     private String jdbcURL = "jdbc:postgresql://dpg-d1ea5oili9vc739r5ekg-a.oregon-postgres.render.com/gdrcalendar";
     private String jdbcUsername = "gdrcalendar_user";
     private String jdbcPassword = "ihczieayR85gPZDqKDgDYmArgikrAk6q";
 
+   
     // Query SQL per inserimento utente, il ruolo è impostato fisso su 'Giocatore'
-    // La community è selezionata tramite subquery in base al nome fornito
+    // La community è selezionata tramite subquery
+    
     private static final String INSERT_USER_SQL =
             "INSERT INTO users (nome, cognome, email, password_hash, ruolo, community_id) " +
             "VALUES (?, ?, ?, ?, 'Giocatore', (SELECT id FROM community WHERE nome = ?))";
 
     public UserDAO() {}
 
-    /**
-     * Restituisce una connessione valida al database.
-     * Carica il driver JDBC se non è già stato caricato.
-     */
+    // Crea una connessione al database. Carica il driver JDBC se necessario.
     protected Connection getConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
@@ -31,12 +38,9 @@ public class UserDAO {
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
     }
 
-    /**
-     * Registra definitivamente un nuovo utente nel sistema (dopo conferma email).
-     *
-     * @param user Oggetto User contenente le informazioni dell'utente da salvare
-     * @return true se l'inserimento nel database è avvenuto con successo
-     */
+    // Inserisce l'utente nel database solo se ha confermato la registrazione.
+    // Imposta il ruolo di default a 'Giocatore' e associa l'utente alla community indicata.
+    
     public boolean registerUser(User user) throws SQLException {
         boolean rowInserted = false;
         try (Connection connection = getConnection();
@@ -55,13 +59,8 @@ public class UserDAO {
         return rowInserted;
     }
 
-    /**
-     * Verifica se un'email è già presente nel sistema, sia tra gli utenti registrati
-     * (tabella `users`) che tra quelli in attesa di conferma (tabella `pending_users`).
-     *
-     * @param email L'indirizzo email da verificare
-     * @return true se l'email è già presente, false altrimenti
-     */
+    // Controlla se l'email è già stata usata, sia da un utente registrato che da uno in attesa di conferma.
+    
     public boolean emailExists(String email) throws SQLException {
         String sql = "SELECT email FROM users WHERE email = ? " +
                      "UNION SELECT email FROM pending_users WHERE email = ?";
@@ -79,17 +78,9 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Salva temporaneamente i dati dell'utente in `pending_users`, in attesa di conferma via email.
-     * Include anche il token di verifica e timestamp di creazione.
-     *
-     * @param nome Nome dell'utente
-     * @param cognome Cognome dell'utente
-     * @param email Email dell'utente
-     * @param passwordHash Password già hashata
-     * @param community Nome della community di appartenenza
-     * @param token Token univoco per la conferma email
-     */
+    // Salva temporaneamente l'utente in attesa di conferma email.
+    // Usa il token per collegare la mail di conferma alla registrazione.
+    
     public void savePendingUser(String nome, String cognome, String email, String passwordHash, String community, String token) throws SQLException {
         String sql = "INSERT INTO pending_users (nome, cognome, email, password_hash, ruolo, community_id, token, created_at) " +
                      "VALUES (?, ?, ?, ?, 'Giocatore', (SELECT id FROM community WHERE nome = ?), ?, NOW())";
@@ -108,11 +99,8 @@ public class UserDAO {
         }
     }
     
-    /**
-     * Elimina tutti gli utenti in attesa di conferma (`pending_users`) il cui timestamp
-     * di creazione è più vecchio di 5 minuti.
-     * Utile per mantenere pulita la tabella da registrazioni non confermate.
-     */
+    // Rimuove le registrazioni non confermate dopo 5 minuti.
+ 
     public void deleteExpiredPendingUsers() throws SQLException {
         String sql = "DELETE FROM pending_users WHERE created_at < NOW() - INTERVAL '5 minutes'";
         try (Connection connection = getConnection();
@@ -124,14 +112,9 @@ public class UserDAO {
     }
     
 
-    /**
-     * Conferma l'utente utilizzando il token ricevuto via email.
-     * Se il token è valido, sposta l'utente dalla tabella `pending_users` a `users`
-     * e lo rimuove dalla lista dei registrati in attesa.
-     *
-     * @param token Token di conferma assegnato all'utente durante la registrazione
-     * @return true se la conferma e la migrazione sono andate a buon fine, false altrimenti
-     */
+    // Conferma l'utente usando il token ricevuto via email.
+    // Se valido, l'utente viene spostato da pending_users a users.
+    
     public boolean confirmUser(String token) throws SQLException {
         String sql = "SELECT * FROM pending_users WHERE token = ?";
 
@@ -169,15 +152,9 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Verifica le credenziali di accesso di un utente.
-     * Recupera l'hash della password associato all'email fornita e confronta
-     * la password in chiaro con l'hash memorizzato usando BCrypt.
-     *
-     * @param email Email dell'utente
-     * @param password Password in chiaro inserita dall'utente
-     * @return true se le credenziali sono corrette, false altrimenti
-     */
+    // Verifica le credenziali email + password controllando l’hash salvato.
+    // Usa BCrypt per proteggere la password.
+    
     public boolean validateUser(String email, String password) throws SQLException {
         String sql = "SELECT password_hash FROM users WHERE email = ?";
 
@@ -199,13 +176,8 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Restituisce il ruolo dell'utente associato a una determinata email.
-     * Utile per determinare il tipo di accesso o reindirizzamento post-login.
-     *
-     * @param email Email dell'utente
-     * @return Il ruolo dell'utente (es. "Giocatore", "Master", "Admin") oppure null se non trovato
-     */
+    // Ritorna il ruolo dell’utente in base all’email.
+    
     public String getRuoloByEmail(String email) throws SQLException {
         String sql = "SELECT ruolo FROM users WHERE email = ?";
 
@@ -226,13 +198,8 @@ public class UserDAO {
         return null;
     }
     
-    /**
-     * Salva un token di reset della password per l'utente identificato dall'email.
-     * Questo token sarà utilizzato per verificare la richiesta di reset.
-     *
-     * @param email Email dell'utente che ha richiesto il reset
-     * @param token Token generato per il reset della password
-     */
+    // Salva il token per il reset password richiesto dall’utente
+    
     public void saveResetToken(String email, String token) throws SQLException {
         String sql = "UPDATE users SET reset_token = ? WHERE email = ?";
 
@@ -247,14 +214,8 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Aggiorna la password dell'utente utilizzando un token di reset valido,
-     * e invalida il token una volta usato.
-     *
-     * @param token Token di reset della password (precedentemente salvato)
-     * @param newHashed Nuova password già hashata
-     * @return true se l'aggiornamento ha avuto successo, false se il token non è valido o non esiste
-     */
+    // Sostituisce la vecchia password con quella nuova, se il token è valido
+    
     public boolean updatePasswordByToken(String token, String newHashed) throws SQLException {
         String sql = "UPDATE users SET password_hash = ?, reset_token = NULL WHERE reset_token = ?";
 
@@ -272,12 +233,8 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Stampa informazioni dettagliate sull'eccezione SQL ricevuta.
-     * Utile per il debug durante lo sviluppo.
-     *
-     * @param ex Eccezione SQL da stampare
-     */
+    
+    // Stampa a console i dettagli dell'eccezione SQL.
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
@@ -288,28 +245,43 @@ public class UserDAO {
 
     /**
      * Aggiorna l'indirizzo email di un utente.
+     * Questo metodo aggiorna sia la tabella `users` che la tabella `prenotazioni per mantenere la coerenza tra i dati.
      *
-     * @param oldEmail L'attuale indirizzo email dell'utente
-     * @param newEmail Il nuovo indirizzo email da assegnare
      */
+    
     public void updateEmail(String oldEmail, String newEmail) throws SQLException {
-        String sql = "UPDATE users SET email = ? WHERE email = ?";
+        String updateUserSql = "UPDATE users SET email = ? WHERE email = ?";
+        String updatePrenotazioniSql = "UPDATE prenotazioni SET email = ? WHERE email = ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false); // Avvia una transazione
 
-            stmt.setString(1, newEmail);
-            stmt.setString(2, oldEmail);
-            stmt.executeUpdate();
+            try (
+                PreparedStatement updateUserStmt = conn.prepareStatement(updateUserSql);
+                PreparedStatement updatePrenotazioniStmt = conn.prepareStatement(updatePrenotazioniSql)
+            ) {
+                // Aggiorna l'email nella tabella utenti
+                updateUserStmt.setString(1, newEmail);
+                updateUserStmt.setString(2, oldEmail);
+                updateUserStmt.executeUpdate();
+
+                // Aggiorna l'email anche nelle prenotazioni legate a quell'utente
+                updatePrenotazioniStmt.setString(1, newEmail);
+                updatePrenotazioniStmt.setString(2, oldEmail);
+                updatePrenotazioniStmt.executeUpdate();
+
+                // Conferma la transazione
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback(); // In caso di errore, annulla tutto
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
     }
-    /**
-     * Aggiorna la password di un utente, sostituendola con una nuova (hashata).
-     * Utilizza BCrypt per la cifratura della password in chiaro prima del salvataggio.
-     *
-     * @param email Email dell'utente di cui aggiornare la password
-     * @param newPassword Nuova password in chiaro da hashare e salvare
-     */
+    
+    //  Aggiorna la password dell'utente con una nuova, CON hash BCrypt.
     public void updatePassword(String email, String newPassword) throws SQLException {
         String sql = "UPDATE users SET password_hash = ? WHERE email = ?";
 
@@ -322,13 +294,7 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Aggiorna il ruolo assegnato a un utente.
-     * Tipicamente usato da amministratori per promuovere/demotere un utente (es. Giocatore → Master).
-     *
-     * @param email Email dell'utente di cui modificare il ruolo
-     * @param newRole Nuovo ruolo da assegnare (es. "Giocatore", "Master", "Admin")
-     */
+    // Aggiorna il ruolo assegnato ad un tuente
     public void updateUserRole(String email, String newRole) throws SQLException {
         String sql = "UPDATE users SET ruolo = ? WHERE email = ?";
 
@@ -341,14 +307,8 @@ public class UserDAO {
         }
     }
     
-    /**
-     * Elimina tutte le prenotazioni associate a un determinato indirizzo email.
-     * Utile quando un utente decide di cancellare il proprio account, per evitare
-     * dati orfani nella tabella `prenotazioni`.
-     *
-     * @param email Indirizzo email dell'utente di cui eliminare le prenotazioni
-     * @throws SQLException In caso di errore durante l'esecuzione della query
-     */
+   
+    // Elimina tutte le prenotazioni fatte da un utente, identificate dalla sua email
     public void deletePrenotazioniByEmail(String email) throws SQLException {
         String sql = "DELETE FROM prenotazioni WHERE email = ?";
         try (Connection conn = getConnection();
@@ -358,14 +318,8 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Elimina definitivamente un utente dalla tabella `users` in base all'email.
-     * Questo metodo viene tipicamente usato dopo aver eliminato eventuali dati collegati,
-     * come le prenotazioni.
-     *
-     * @param email Indirizzo email dell'utente da eliminare
-     * @throws SQLException In caso di errore durante l'eliminazione
-     */
+   
+    // Elimina l'utente
     public void deleteUserByEmail(String email) throws SQLException {
         String sql = "DELETE FROM users WHERE email = ?";
         try (Connection conn = getConnection();
